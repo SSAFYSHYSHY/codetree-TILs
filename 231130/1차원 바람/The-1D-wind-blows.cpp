@@ -1,124 +1,94 @@
 #include <iostream>
 
+#define MAX_N 100
+#define MAX_M 100
+#define SHIFT_RIGHT 0
+#define SHIFT_LEFT 1
+
 using namespace std;
 
 int n, m, q;
-int arr[101][101];
 
-void Move(int i, int dir) {
+int a[MAX_N + 1][MAX_M + 1];
 
-	//오른쪽으로 dir = 1;
-	if (dir == 1) {
-		int temp = arr[i][0];
+void Shift(int row, int dir) {
+    if (dir == SHIFT_RIGHT) {
+        int temp = a[row][m];
+        for (int col = m; col >= 2; col--)
+            a[row][col] = a[row][col - 1];
+        a[row][1] = temp;
+    }
 
-		for (int j = 0; j < m - 1; j++) {
-			arr[i][j] = arr[i][j + 1];
-		}
-
-		arr[i][m-1] = temp;
-
-	}
-
-	//왼쪽으로
-	else {
-		int temp = arr[i][m-1];
-
-		for (int j = m-1; j >= 1; j--) {
-			arr[i][j] = arr[i][j - 1];
-		}
-
-		arr[i][0] = temp;
-	}
+    else {
+        int temp = a[row][1];
+        for (int col = 1; col <= m - 1; col++)
+            a[row][col] = a[row][col + 1];
+        a[row][m] = temp;
+    }
 }
 
-bool InRange(int x, int x2) {
-	for (int i = 0; i < m; i++) {
-		if (arr[x][i] == arr[x2][i]) {
-			return false;
-		}
-	}
 
-	return true;
+bool HasSameNumber(int row1, int row2) {
+    for (int col = 1; col <= m; col++)
+        if (a[row1][col] == a[row2][col])
+            return true;
+
+    return false;
 }
 
-void Calc(int a, char c) {
-	int dir = 0, x , y;
+bool Flip(int dir) {
+    return (dir == SHIFT_LEFT) ? SHIFT_RIGHT : SHIFT_LEFT;
+}
 
-	if (c == 'L') {
-		dir = 0;
-	}
-	else if (c == 'R') {
-		dir = 1;
-	}
-	x = dir;
-	y = dir;
+void Simulate(int start_row, int start_dir) {
 
-	if (dir == 0) { //왼
-		int temp = arr[a - 1][m - 1];
+    Shift(start_row, start_dir);
 
-		for (int i = m - 1; i >= 1; i--) {
-			arr[a - 1][i] = arr[a - 1][i - 1];
-		}
+    start_dir = Flip(start_dir);
 
-		arr[a - 1][0] = temp;
-	}
-	else {
-		int temp = arr[a - 1][0];
+    for (int row = start_row, dir = start_dir; row >= 2; row--) {
 
-		for (int i = 0; i < m-1; i++) {
-			arr[a - 1][i] = arr[a - 1][i + 1];
-		}
+        if (HasSameNumber(row, row - 1)) {
+            Shift(row - 1, dir);
+            dir = Flip(dir);
+        }
 
-		arr[a - 1][m-1] = temp;
-	}
+        else
+            break;
+    }
 
-	//위쪽시작.
-	for (int i = a - 2; i >= 0; i--) {	
-		if (!InRange(i + 1, i)) {
+    for (int row = start_row, dir = start_dir; row <= n - 1; row++) {
 
+        if (HasSameNumber(row, row + 1)) {
+            Shift(row + 1, dir);
+            dir = Flip(dir);
+        }
 
-			dir = (x + 1) % 2;
-
-			Move(i , dir);
-			x++;
-		}
-	}
-
-	//아래쪽시작.
-	for (int i = a ; i < n; i++) {
-
-		if (!InRange(i - 1, i)) {
-			dir = (y + 1) % 2;
-
-			Move(i , dir);
-			y++;
-		}
-	}
-
+        else
+            break;
+    }
 }
 
 int main() {
-	cin >> n >> m >> q;
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
-			cin >> arr[i][j];
-		}
-	}
+    cin >> n >> m >> q;
 
-	for (int i = 0; i < q; i++) {
-		int a;
-		char c;
+    for (int row = 1; row <= n; row++)
+        for (int col = 1; col <= m; col++)
+            cin >> a[row][col];
 
-		cin >> a >> c;
+    while (q--) {
+        int r; char d;
+        cin >> r >> d;
 
-		Calc(a, c);
-	}
+        Simulate(r, d == 'L' ? SHIFT_RIGHT : SHIFT_LEFT);
+    }
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
-			cout << arr[i][j] << " ";
-		}
-		cout << "\n";
-	}
+
+    for (int row = 1; row <= n; row++) {
+        for (int col = 1; col <= m; col++)
+            cout << a[row][col] << " ";
+        cout << endl;
+    }
+    return 0;
 }
