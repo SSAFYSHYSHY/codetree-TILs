@@ -25,6 +25,7 @@ int main() {
 	int a = arr[r][c];
 	a -= 1;
 
+
 	for (int i = r - a; i <= r + a; i++) {
 		if (InRange(i)) {
 			arr[i][c] = 0;
@@ -37,7 +38,7 @@ int main() {
 	}
 
 	for (int i = 1; i <= n; i++) {
-		int cnt = 4;
+		int cnt = n;
 		for (int j = n; j >= 1; j--) {
 			if (arr[j][i] != 0) {
 				temp[cnt][i] = arr[j][i];
