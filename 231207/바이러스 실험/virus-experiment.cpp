@@ -64,8 +64,9 @@ void Calc() {
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			for (int k = 0; k < (int)virus[i][j].size(); k++) {
-				if (virus[i][j][k] % 5 == 0) {
+			for (int k = 0; k < (int)new_virus[i][j].size(); k++) {
+				int cnt = new_virus[i][j][k];
+				if (cnt % 5 == 0) {
 					Calc2(i, j);
 				}
 			}
