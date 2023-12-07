@@ -49,8 +49,8 @@ void Calc() {
 				int cnt = virus[i][j][k];
 
 				if (food[i][j] >= cnt) {
-					new_virus[i][j].push_back(cnt+1);
 					food[i][j] -= cnt;
+					new_virus[i][j].push_back(cnt + 1);
 				}
 				else {
 					new_food[i][j] += cnt / 2;
@@ -64,7 +64,7 @@ void Calc() {
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			for (int k = 0; k < virus[i][j].size(); k++) {
+			for (int k = 0; k < (int)virus[i][j].size(); k++) {
 				if (virus[i][j][k] % 5 == 0) {
 					Calc2(i, j);
 				}
@@ -116,7 +116,7 @@ int main() {
 	int ans = 0;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			ans += virus[i][j].size();
+			ans += (int)virus[i][j].size();
 		}
 	}
 
