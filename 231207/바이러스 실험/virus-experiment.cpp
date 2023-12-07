@@ -1,12 +1,14 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
-int n,m,k;
+int n, m, k;
 int arr[11][11];
-int new_arr[11][11];
+int food[11][11];
+int new_food[11][11];
+
 vector<int> virus[11][11];
 vector<int> new_virus[11][11];
 
@@ -23,73 +25,62 @@ void Calc2(int x, int y) {
 		int ny = y + dy[i];
 
 		if (CanGo(nx, ny)) {
-			virus[nx][ny].push_back(1);
+			new_virus[nx][ny].push_back(1);
 		}
 	}
 }
 
 void Calc() {
-	//새로운 바이러스와 양분 값을 초기화. 시뮬.
+	//초기화
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
+			new_food[i][j] = 0;
 			new_virus[i][j].clear();
-			new_arr[i][j] = 0;
 		}
 	}
 
-	//정렬.
+	//양분 섭취 유무.
+
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			sort(virus[i][j].begin(), virus[i][j].end());
-		}
-	}
 
-	//양분 판별.
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			
-			for (int k = 0; k < virus[i][j].size() ; k++) {
-				int age = virus[i][j][k];
+			for (int k = 0; k < virus[i][j].size(); k++) {
+				int cnt = virus[i][j][k];
 
-				if (arr[i][j] >= age) {
-					arr[i][j] -= age;
-					new_virus[i][j].push_back(age + 1);
+				if (food[i][j] >= cnt) {
+					new_virus[i][j].push_back(cnt+1);
+					food[i][j] -= cnt;
 				}
 				else {
-					new_arr[i][j] += age / 2;
+					new_food[i][j] += cnt / 2;
 				}
+
 			}
 
-			new_arr[i][j] += arr[i][j];
+			new_food[i][j] += food[i][j];
 		}
 	}
 
-	//만약 바이러스의 크기가 5의 배수라면.
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			for (int k = 0; k < virus[i][j].size(); k++) {
-				int age = virus[i][j][k];
-				if (age % 5 == 0) {
+				if (virus[i][j][k] % 5 == 0) {
 					Calc2(i, j);
 				}
 			}
+
+			new_food[i][j] += arr[i][j];
 		}
 	}
 
-	//양분에 + arr 원본씩 추가.
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			new_arr[i][j] += arr[i][j];
-		}
-	}
-
-	//값 갱신.
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
+			food[i][j] = new_food[i][j];
 			virus[i][j] = new_virus[i][j];
-			arr[i][j] = new_arr[i][j];
 		}
 	}
+
 }
 
 int main() {
@@ -98,6 +89,7 @@ int main() {
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			cin >> arr[i][j];
+			food[i][j] = 5;
 		}
 	}
 
@@ -115,12 +107,9 @@ int main() {
 	int ans = 0;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			if (virus[i][j].size() > 0) {
-				ans++;
-			}
+			ans += virus[i][j].size();
 		}
 	}
 
 	cout << ans;
-	return 0;
 }
