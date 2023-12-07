@@ -47,7 +47,7 @@ void BFS() {
 			int nx = curr_x + dx[i];
 			int ny = curr_y + dy[i];
 
-			if (CanGo(nx, ny, arr[nx][ny])) {
+			if (CanGo(nx, ny, arr[curr_x][curr_y])) {
 				q.push(make_pair(nx, ny));
 				egg.push_back(make_pair(nx, ny));
 				//만약 가중치가 존재한다면 해당 값을 새로운 배열에 누적.
@@ -59,16 +59,16 @@ void BFS() {
 
 void Calc2() {
 	int sum = 0;
-	for (int i = 0; i < egg.size(); i++) {
+	for (int i = 0; i < (int)egg.size(); i++) {
 		int x, y;
 		tie(x, y) = egg[i];
 		sum += arr[x][y];
 	}
 
-	for (int i = 0; i < egg.size(); i++) {
+	for (int i = 0; i < (int)egg.size(); i++) {
 		int x, y;
 		tie(x, y) = egg[i];
-		arr[x][y] = sum / egg.size();
+		arr[x][y] = sum / (int)egg.size();
 	}
 }
 
@@ -83,10 +83,12 @@ bool Calc() {
 
 				egg.push_back(make_pair(i, j));
 				q.push(make_pair(i, j));
+                visited[i][j] = true;
+
 				BFS();
 
 
-				if (q.size() > 1) {
+				if ((int)egg.size() > 1) {
 					flag = true;
 				}
 
