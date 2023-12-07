@@ -45,7 +45,7 @@ void Calc() {
 		for (int j = 0; j < n; j++) {
 			sort(virus[i][j].begin(), virus[i][j].end());
 
-			for (int k = 0; k < virus[i][j].size(); k++) {
+			for (int k = 0; k < (int)virus[i][j].size(); k++) {
 				int cnt = virus[i][j][k];
 
 				if (food[i][j] >= cnt) {
@@ -69,7 +69,11 @@ void Calc() {
 					Calc2(i, j);
 				}
 			}
+		}
+	}
 
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
 			new_food[i][j] += arr[i][j];
 		}
 	}
@@ -89,6 +93,11 @@ int main() {
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			cin >> arr[i][j];
+		}
+	}
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
 			food[i][j] = 5;
 		}
 	}
@@ -97,7 +106,7 @@ int main() {
 		int r, c, n;
 		cin >> r >> c >> n;
 
-		virus[r][c].push_back(n);
+		virus[r-1][c-1].push_back(n);
 	}
 
 	while (k--) {
