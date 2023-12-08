@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int n, x, y, d, g;
+int n;
 
 bool arr[101][101];
 bool visited[101][101];
@@ -13,7 +13,7 @@ pair<int, int> Rotate(int x, int y, int c_x, int c_y) {
 	return make_pair(y - c_y + c_x, c_x - x + c_y);
 }
 
-void Calc(int x, int y) {
+void Calc2(int x, int y) {
 	for (int i = 0; i < 101; i++) {
 		for (int j = 0; j < 101; j++) {
 			new_visited[i][j] = false;
@@ -53,7 +53,7 @@ void Calc(int x, int y, int dir, int g) {
 	int dy[] = {1,0,-1,0};
 
 	int s_x = x, s_y = y;
-	int e_x = x + dx[dir], e_y = y + dx[dir];
+	int e_x = x + dx[dir], e_y = y + dy[dir];
 
 	visited[s_x][s_y] = true;
 	visited[e_x][e_y] = true;
@@ -61,7 +61,7 @@ void Calc(int x, int y, int dir, int g) {
 	//g 까지 순회.
 	while (g--) {
 		//커브 확장.
-		Calc(e_x, e_y);
+		Calc2(e_x, e_y);
 
 		tie(e_x, e_y) = Rotate(s_x, s_y, e_x, e_y);
 	}
@@ -80,9 +80,10 @@ int main() {
 	cin >> n;
 
 	while (n--) {
+        int x,y,d,g;
 		cin >> x >> y >> d >> g;
 
-		Calc(x,y, d, g);
+		Calc(x, y, d, g);
 	}
 
 	int ans = 0;
