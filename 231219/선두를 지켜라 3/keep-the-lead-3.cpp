@@ -3,7 +3,7 @@
 using namespace std;
 
 int a, b;
-int arr[1001], brr[1001];
+int arr[1000001], brr[1000001];
 int cnt = 0, flag = 0;
 
 int main() {
@@ -33,7 +33,7 @@ int main() {
 		}
 	}
 
-	for (int i = 2; i <= a_num; i++) {
+	for (int i = 1; i < a_num; i++) {
 		if (arr[i] > brr[i]) {
 			if (flag == 2 || flag == 3) {
 				cnt++;
