@@ -33,7 +33,7 @@ int main() {
 		}
 	}
 
-	for (int i = 1; i <= a_num; i++) {
+	for (int i = 2; i <= a_num; i++) {
 		if (arr[i] > brr[i]) {
 			if (flag == 2 || flag == 3) {
 				cnt++;
