@@ -36,7 +36,7 @@ int main() {
 	}
 
 	int ans = 0;
-	for (int t = 1; t <= 100; t++) {
+	for (int t = 1; t <= 1000; t++) {
 		int cnt = 0;
 
 		cnt = Calc(t);
