@@ -1,39 +1,39 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
 
 using namespace std;
 
+int n, m;
+int arr[10001];
+
+bool Calc(int num) {
+	int idx = 0;
+
+	for (int i = 1; i < n; i++) {
+		if (arr[i] <= num) {
+			if (i - idx > m) {
+				return false;
+			}
+			idx = i;
+		}
+	}
+
+	return true;
+}
+
 int main() {
-    int n, k;
-    cin >> n >> k;
+	
+	cin >> n >> m;
 
-    vector<int> stones(n);
-    for (int i = 0; i < n; ++i) {
-        cin >> stones[i];
-    }
+	for (int i = 0; i < n; i++) {
+		cin >> arr[i];
+	}
 
-    int minMaxValue = 21e8;
+	int min_ans = 21e8;
+	for (int i = max(arr[0], arr[n - 1]); i <= 100; i++) {
+		if (Calc(i)) {
+			cout << i;
+			break;
+		}
+	}
 
-    for (int start = 0; start < k; ++start) {
-        vector<int> visited(n, 0);
-        int currentPos = start;
-        int maxVal = 0;
-
-        while (currentPos < n) {
-            visited[currentPos] = 1;
-            maxVal = max(maxVal, stones[currentPos]);
-            currentPos += k;
-        }
-
-        if (currentPos - k < n) {
-            maxVal = max(maxVal, *max_element(stones.begin() + currentPos - k + 1, stones.end()));
-        }
-
-        minMaxValue = min(minMaxValue, maxVal);
-    }
-
-    cout << minMaxValue << endl;
-
-    return 0;
 }
