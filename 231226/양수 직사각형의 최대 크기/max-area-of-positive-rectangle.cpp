@@ -15,8 +15,9 @@ int Rect(int x1, int y1, int x2, int y2) {
 	for (int i = x1; i <= x2; i++) {
 		for (int j = y1; j <= y2; j++) {
             //만약 음수 만나면 그냥 0 반환.
-			if (arr[i][j] < 0) return 0;
+			if (arr[i][j] <= 0) return 0;
 
+            //i, j 가 범위값 안에 들어오면.
             if(CanGo(i,j)) {
 			    sum += 1;
             }
