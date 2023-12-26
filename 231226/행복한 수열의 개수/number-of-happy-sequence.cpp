@@ -8,14 +8,19 @@ int arr[101][101];
 //행 연산.
 bool Calc(int num, int flag) {
 	if (flag == 0) {
-		int cnt = 1;
-		for (int i = 0; i < n - 1; i++) {
-			if (arr[i][num] == arr[i + 1][num]) {
+		int cnt = 1, max_cnt = 1;
+		for (int i = 1; i < n; i++) {
+			if (arr[i][num] == arr[i - 1][num]) {
 				cnt++;
 			}
+            else {
+                cnt = 1;
+            }
+
+            max_cnt = max(max_cnt, cnt);
 		}
 
-		if (cnt >= m) {
+		if (max_cnt >= m) {
 			return true;
 		}
 		else {
@@ -23,15 +28,20 @@ bool Calc(int num, int flag) {
 		}
 	}
 	else {
-		int cnt = 1;
-		for (int i = 0; i < n - 1; i++) {
-			if (arr[num][i] == arr[num][i+1]) {
+		int cnt = 1, max_cnt = 1;
+		for (int i = 1; i < n; i++) {
+			if (arr[num][i] == arr[num][i-1]) {
 				cnt++;
 			}
+            else {
+                cnt = 1;
+            }
+
+            max_cnt = max(max_cnt, cnt);
 
 		}
 
-		if (cnt >= m) {
+		if (max_cnt >= m) {
 			return true;
 		}
 		else {
