@@ -5,18 +5,28 @@ using namespace std;
 int n;
 int arr[46];
 
-int main() {
-	int n;
-	cin >> n;
+void Initial(){
+    for(int i = 0 ; i<= 46 ; i++) {
+        arr[i] = -1;
+    }
+}
 
-	arr[1] = 1;
-	arr[2] = 1;
+int Calc(int n) {
+    if(arr[n] != -1) {
+        return arr[n];
+    }
 
-	for (int i = 3; i <= n; i++) {
-		arr[i] = arr[i - 1] + arr[i - 2];
-	}
+    if(n == 1 || n == 2) {
+        return arr[n ] =1;
+    }
 
-	cout << arr[n];
+    return arr[n] = Calc(n-1) + Calc(n-2);
+}
 
+int main(){
+    cin >> n;
 
+    Initial();
+
+    cout << Calc(n);
 }
