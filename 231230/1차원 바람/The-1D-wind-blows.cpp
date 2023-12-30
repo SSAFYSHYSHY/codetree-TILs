@@ -1,4 +1,6 @@
 #include <iostream>
+#define SHIFT_L 1
+#define SHIFT_R 0
 
 using namespace std;
 
@@ -9,30 +11,30 @@ int num[101], ord[101];
 void Calc2(int num, int swi) {
 	//0 은 왼쪽에서 부는 바람.
 	if (swi == 0) {
-		int temp = arr[num][m-1];
+		int temp = arr[num][m];
 
-		for (int i = m; i > 0; i--) {
+		for (int i = m; i >= 2; i--) {
 			arr[num][i] = arr[num][i - 1];
 		}
 
-		arr[num][0] = temp;
+		arr[num][1] = temp;
 	}
 
 	//1은 오른쪽에서 부는 바람.
 	if (swi == 1) {
-		int temp = arr[num][0];
+		int temp = arr[num][1];
 
-		for (int i = 0; i < m - 1; i++) {
+		for (int i = 1; i <= m - 1; i++) {
 			arr[num][i] = arr[num][i + 1];
 		}
 
-		arr[num][m - 1] = temp;
+		arr[num][m] = temp;
 	}
 }
 
 //두 행을 비교해서 똑같은게 나오면 바로 visited 선언하고 반환.
 bool Calc(int x, int x1) {
-	for (int i = 0; i < m; i++) {
+	for (int i = 1; i <= m; i++) {
 		if (arr[x][i] == arr[x1][i]) {
 			return true;
 		}
@@ -41,74 +43,57 @@ bool Calc(int x, int x1) {
 	return false;
 }
   
+bool Flip(int dir){
+    return (dir == SHIFT_L) ? SHIFT_R : SHIFT_L;
+}
+
+void Simul(int n, int dir) {
+    Calc2(n, dir);
+
+    dir = Flip(dir);
+
+    for(int i = n, d = dir; i >= 2; i--) {
+
+        if(Calc(i, i - 1)) {
+            Calc2(i - 1, d);
+            d = Flip(d);
+        }
+
+        else
+            break;
+    }
+
+    for(int i = n, d = dir; i <= m-1; i++) {
+
+        if(Calc(i, i + 1)) {
+            Calc2(i + 1, d);
+            d = Flip(d);
+        }
+
+        else
+            break;
+    }
+}
+
 int main() {
 	cin >> n >> m >> q;
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= m; j++) {
 			cin >> arr[i][j];
 		}
 	}
 
-	for (int i = 0; i < q; i++) {
-		int a;
-		char c;
-		cin >> a >> c;
+	while(q--) {
+        int a;
+        char c;
+        cin >> a >> c;
 
-		num[i] = a - 1;
+        Simul(a, c == 'L' ? SHIFT_R : SHIFT_L);
+    }
 
-		if (c == 'L') {
-			ord[i] = 0;
-		}
-		else {
-			ord[i] = 1;
-		}
-	}
-
-	for (int t = 0; t < q; t++) {
-		
-		int a, b;
-		a = num[t];
-		b = ord[t];
-
-		Calc2(a, b);
-		int swi = b;
-		int swi2 = b;
-
-		//i 부터 0 까지 찾기.
-		for (int i = a ; i > 0; i--) {
-
-			//i, i-1 비교하기.
-			if (Calc(i, i - 1)) {
-				swi = (swi + 1) % 2;
-				
-				//cout << swi << " ";
-
-				Calc2(i - 1, swi);
-			}
-			else {
-				continue;
-			}
-		}
-
-		//i 부터 n 까지 찾기.
-		for (int i = a; i < n-1; i++) {
-
-			if (Calc(i, i + 1)) {
-				swi2 = (swi2 + 1) % 2;
-
-				//cout << swi2 << " ";
-
-				Calc2(i + 1, swi2);
-			}
-			else {
-				continue;
-			}
-		}
-	}
-
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= m; j++) {
 			cout << arr[i][j] << " ";
 		}
 		cout << "\n";
