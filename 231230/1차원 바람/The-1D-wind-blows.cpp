@@ -6,7 +6,6 @@ using namespace std;
 
 int n, m, q;
 int arr[101][101];
-int num[101], ord[101];
 
 void Calc2(int num, int swi) {
 	//0 은 왼쪽에서 부는 바람.
@@ -21,7 +20,7 @@ void Calc2(int num, int swi) {
 	}
 
 	//1은 오른쪽에서 부는 바람.
-	if (swi == 1) {
+	else {
 		int temp = arr[num][1];
 
 		for (int i = 1; i <= m - 1; i++) {
@@ -47,12 +46,12 @@ bool Flip(int dir){
     return (dir == SHIFT_L) ? SHIFT_R : SHIFT_L;
 }
 
-void Simul(int n, int dir) {
-    Calc2(n, dir);
+void Simul(int a, int dir) {
+    Calc2(a, dir);
 
     dir = Flip(dir);
 
-    for(int i = n, d = dir; i >= 2; i--) {
+    for(int i = a, d = dir; i >= 2; i--) {
 
         if(Calc(i, i - 1)) {
             Calc2(i - 1, d);
@@ -63,7 +62,7 @@ void Simul(int n, int dir) {
             break;
     }
 
-    for(int i = n, d = dir; i <= m-1; i++) {
+    for(int i = a, d = dir; i <= n-1; i++) {
 
         if(Calc(i, i + 1)) {
             Calc2(i + 1, d);
