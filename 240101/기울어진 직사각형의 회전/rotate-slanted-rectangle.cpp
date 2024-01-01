@@ -17,8 +17,8 @@ void Calc(int x, int y, int k, int l, int k1, int l1, int dir) {
 		d = { k,l,k1,l1 };
 	}
 	else {
-		dx = { 1,1,-1,-1 };
-		dy = { 1,-1,-1,1 };
+		dx = { -1,-1,1,1 };
+		dy = { -1,1,1,-1 };
 		d = { l1,k1,l,k };
 	}
 
