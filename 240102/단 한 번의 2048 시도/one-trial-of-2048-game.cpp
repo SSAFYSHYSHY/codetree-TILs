@@ -13,9 +13,9 @@ void Calc2(int num) {
 
 		//temp 배열 작성.
 		for (int i = 0; i < 4; i++) {
-			for (int j = 3; j > 0; j--) {
+			for (int j = 3; j >= 0; j--) {
 				int a = arr[i][j];
-				for (int k = j - 1; k > 0; k--) {
+				for (int k = j - 1; k >= 0; k--) {
 					if (arr[i][k] == 0) {
 						continue;
 					}
@@ -44,11 +44,11 @@ void Calc2(int num) {
 		}
 	}
 
-	//오른쪽에서 밀어주는 배열.
+	//왼쪽에서 밀어주는 배열.
 	//j 의 첫 행부터 터트려야 함. j = 0 으로 고정.
 	else if (num == 2) {
 		for (int i = 0; i < 4; i++) {
-			for (int j = 1; j < 4; j++) {
+			for (int j = 0; j < 4; j++) {
 				int a = arr[i][j];
 				for (int k = j + 1; k < 4; k++) {
 					if (arr[i][k] == 0) {
