@@ -82,9 +82,9 @@ void Calc2(int num) {
 	//x 의 끝행부터 터트려야 함. i = n-1 로 고정.
 	else if (num == 3) {
 		for (int j = 0; j < 4; j++) {
-			for (int i = 3; i > 0; i--) {
+			for (int i = 3; i >= 0; i--) {
 				int a = arr[i][j];
-				for (int k = i - 1; k > 0; k--) {
+				for (int k = i - 1; k >= 0; k--) {
 					if (arr[k][j] == 0) {
 						continue;
 					}
