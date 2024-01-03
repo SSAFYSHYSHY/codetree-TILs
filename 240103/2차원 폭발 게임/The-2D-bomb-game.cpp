@@ -1,146 +1,143 @@
 #include <iostream>
 
+#define MAX_NUM 100
+#define BLANK -1
+#define WILL_EXPLODE 0
+
 using namespace std;
 
-int n, m, k;
-int arr[101][101];
-int temp[101][101];
+int n, m, k, end_of_numbers_1d, end_of_temp_1d;
+int numbers_2d[MAX_NUM][MAX_NUM];
+int numbers_1d[MAX_NUM];
+int temp_2d[MAX_NUM][MAX_NUM];
+int temp_1d[MAX_NUM];
 
-void Copy() {
-	//떨어트리기.
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			temp[i][j] = 0;
-		}
-	}
+int GetEndIdxOfExplosion(int start_idx, int curr_num) {
+    int end_idx = start_idx + 1;
+    while(end_idx < end_of_numbers_1d) {
+        if(numbers_1d[end_idx] == curr_num)
+            end_idx++;
+        else{
+            break;
+        }
+    }
 
-	for (int j = 0; j < n; j++) {
-		int cnt = n - 1;
-
-		for (int i = n - 1; i >= 0; i--) {
-			if (arr[i][j] > 0) {
-				temp[cnt][j] = arr[i][j];
-				cnt--;
-			}
-		}
-	}
-
-	//arr에 복사.
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			arr[i][j] = temp[i][j];
-		}
-	}
+    return end_idx - 1;
 }
 
-void Calc(int num) {
-	//폭탄 연산.
-	//각 j 0 부터 시작해서 i n-1 ~ 0 까지 비교.
+void FillZero(int start_idx, int end_idx) {
+    for(int i = start_idx; i <= end_idx; i++) {
+        numbers_1d[i] = WILL_EXPLODE;
+    }
+}
 
-	for (int j = 0; j < n; j++) {
-		//같은 영역을 다 0 처리 해줘야 함. 그 같은 영역의 좌표.
-		int x = 0;
-		int y = 0;
+void MoveToTemp() {
+    end_of_temp_1d = 0;
+    for(int i = 0; i < end_of_numbers_1d; i++) {
+        if(numbers_1d[i] != WILL_EXPLODE) {
+            temp_1d[end_of_temp_1d++] = numbers_1d[i];
+        }
+    }
+}
 
-		for (int i = n - 1; i > 0; i--) {
-			int a = arr[i][j];
-			int same = 1;
+void CopyFromTemp() {
+    end_of_numbers_1d = end_of_temp_1d;
+    for(int i = 0; i < end_of_numbers_1d; i++) {
+        numbers_1d[i] = temp_1d[i];
+    }
+}
 
-			for (int k = i - 1; k >= 0; k--) {
-				if (arr[k][j] == a && arr[k][j] != 0) {
-					same++;
-				}
-				else {
-					break;
-				}
+void Explode() {
 
-			}
+    bool did_explode;
+    do {
+        did_explode = false;
+        for(int curr_idx = 0; curr_idx < end_of_numbers_1d; curr_idx++) {  
 
-			if (same >= m) {
-				x = i;
-				y = x - same + 1;
+            if(numbers_1d[curr_idx] == WILL_EXPLODE) { 
+                continue;
+            }
 
-				for (int l = y; l <= x; l++) {
-					arr[l][j] = 0;
-				}
-			}
-		}
+            int end_idx = GetEndIdxOfExplosion(curr_idx, numbers_1d[curr_idx]);
 
-	}
+            if(end_idx - curr_idx + 1 >=  m) {
+                FillZero(curr_idx, end_idx);
+                did_explode = true;
+            }
+        }
+        MoveToTemp();
+        CopyFromTemp();       
+    }
+    while(did_explode); 
 
 }
 
-void Calc2() {
-	//회전.
-	//시계 방향 90도 회전.
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			temp[i][j] = 0;
-		}
-	}
+void CopyColumn(int col){
+    end_of_numbers_1d = 0;
+    for(int i = 0; i < n; i++)
+        if(numbers_2d[i][col] != BLANK)
+            numbers_1d[end_of_numbers_1d++] = numbers_2d[i][col];
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			temp[i][j] = arr[n - j - 1][i];
-		}
-	}
+    return;
+}
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			arr[i][j] = temp[i][j];
-		}
-	}
+void CopyResult(int col){
+    int result_idx = end_of_numbers_1d - 1;
+    for(int i = n - 1; i >= 0; i--) {
+        if(result_idx >= 0)
+            numbers_2d[i][col] = numbers_1d[result_idx--];
+        else
+            numbers_2d[i][col] = BLANK;
+    }
+}
 
+void Simulate() {
+    for(int col = 0; col < n; col++) {
+        CopyColumn(col);
+        Explode();
+        CopyResult(col);
+    }
+}
 
+void Rotate() {
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            temp_2d[i][j] = BLANK;
+
+    int curr_idx;
+    for(int i = n - 1; i >= 0; i--) {
+        curr_idx = n - 1;
+        for(int j = n - 1; j >= 0; j--) {
+            if(numbers_2d[i][j] != BLANK)
+                temp_2d[curr_idx--][n - i - 1] = numbers_2d[i][j];
+        }
+    }
+
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            numbers_2d[i][j] = temp_2d[i][j];
 }
 
 int main() {
-	cin >> n >> m >> k;
+    cin >> n >> m >> k;
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            cin >> numbers_2d[i][j];
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			cin >> arr[i][j];
-		}
-	}
+    Simulate();
+    for(int i = 0; i < k; i++) {
+        Rotate();
+        Simulate();
+    }
 
-	if(n == 1 && m > 1) {
-		cout << 1;
-		return 0;
-	}
-	if(n == 1 && m == 1) {
-		cout << 0;
-		return 0;
-	}
+    int answer = 0;
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            if(numbers_2d[i][j] != BLANK)
+                answer++;
+    
+    cout << answer;
 
-	for (int i = 0; i < k; i++) {
-		//폭탄 연산
-		Calc(m);
 
-		//복사
-		Copy();
-
-		//회전
-		Calc2();
-
-		//복사
-		Copy();
-
-		Calc(m);
-	}
-
-	int cnt = 0;
-	
-	//cout << "\n";
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			//cout << arr[i][j] << " ";
-			
-			if (arr[i][j]) {
-				cnt++;
-			}
-		}
-		//cout << "\n";
-	}
-
-	cout << cnt;
+    return 0;
 }
