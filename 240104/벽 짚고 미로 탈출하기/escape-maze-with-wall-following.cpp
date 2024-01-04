@@ -7,7 +7,7 @@ using namespace std;
 int n, x, y;
 int dx[] = { 0, 1, 0,-1 };
 int dy[] = { 1,0,-1,0 };
-vector<vector<char>> arr(101, vector<char>(101));
+char arr[101][101];
 
 bool InRange(int x, int y) {
 	return 0 <= x && x < n && 0 <= y && y < n;
@@ -15,7 +15,7 @@ bool InRange(int x, int y) {
 
 pair<int, int> move(int curr) {
 	int cnt = 0;
-	int nx, ny;
+	int nx = 0, ny = 0;
 
 	for (int i = 0; i < 4; i++) {
 		cnt += 1;
@@ -36,7 +36,12 @@ pair<int, int> move(int curr) {
 		}
 	}
 
-	return make_pair(x, y) == make_pair(nx, ny) ? make_pair(x, y) : make_pair(nx, ny);
+	if (cnt != 4) {
+		return make_pair(nx, ny);
+	}
+	else {
+		return make_pair(x, y);
+	}
 }
 
 bool Calc(int curr) {
@@ -45,7 +50,12 @@ bool Calc(int curr) {
 	int nx = x + dx[r];
 	int ny = y + dy[r];
 
-	return arr[nx][ny] == '#';
+	if (arr[nx][ny] == '#') {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 int main() {
@@ -79,5 +89,10 @@ int main() {
 
 	}
 
-	cout << (ans != n * n ? ans : -1) << "\n";
+	if (ans != n * n) {
+		cout << ans;
+	}
+	else {
+		cout << -1;
+	}
 }
