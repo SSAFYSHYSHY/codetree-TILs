@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int n, x, y;
+int n, x, y, curr;
 int dx[] = { 0, 1, 0,-1 };
 int dy[] = { 1,0,-1,0 };
 char arr[101][101];
@@ -13,7 +13,7 @@ bool InRange(int x, int y) {
 	return 0 <= x && x < n && 0 <= y && y < n;
 }
 
-pair<int, int> move(int curr) {
+pair<int, int> move() {
 	int cnt = 0;
 	int nx = 0, ny = 0;
 
@@ -22,6 +22,8 @@ pair<int, int> move(int curr) {
 
 		nx = x + dx[curr];
 		ny = y + dy[curr];
+
+		//cout << nx << " " << ny << " \n";
 
 		if (!InRange(nx, ny)) {
 			return make_pair(-1, -1);
@@ -69,12 +71,12 @@ int main() {
 			cin >> arr[i][j];
 		}
 	}
-
-	int curr = 0;
 	int ans = 0;
 
 	for (int i = 0; i < n * n; i++) {
-		pair<int, int> pos = move(curr);
+		pair<int, int> pos = move();
+
+
 		ans += 1;
 
 		if (pos == make_pair(-1, -1)) {
