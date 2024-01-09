@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -8,42 +9,38 @@ int arr[11][11];
 bool visited[11];
 vector<int> v;
 
-int Calc2() {
-	int sum = 0;
-	int x = 1, y = 0;
-	for (int i = 0; i < v.size(); i++) {
-		y = v[i];
-		sum += arr[x][y];
-
-		x = y;
-	}
-
-	return sum;
-}
-
 void Calc(int num) {
-	if (v.size() == n) {
-		if (v[v.size() - 1] != 1) {
-			return;
+	//모든 지점 방문 했을때 최소 값 갱신.
+	if (num == n) {
+		int sum = 0;
+
+		for (int i = 0; i < v.size() - 1; i++) {
+			int curr = arr[v[i]][v[i + 1]];
+
+			//현재 값이 0 이면 빠꾸.
+			if (curr == 0) return;
+
+			sum += curr;
 		}
 
-		// for (int i = 0; i < v.size(); i++) {
-		// 	cout << v[i] << " ";
-		// }
-		// cout << "\n";
+		//최종 1번 지점으로 돌아오는지.
+		int supply_sum = arr[v.back()][0];
+		if (supply_sum == 0) return;
 
-		ans = min(ans, Calc2());
+		//최소값 갱신.
+		ans = min(ans, sum + supply_sum);
+
+		return;
+
 	}
 
-	for (int i = 1; i <= n; i++) {
-		if (arr[num][i] == 0) continue;
-
-		if (visited[i] == true) continue;
+	for (int i = 0; i < n; i++) {
+		if (visited[i]) continue;
 
 		visited[i] = true;
 		v.push_back(i);
 
-		Calc(i);
+		Calc(num + 1);
 
 		v.pop_back();
 		visited[i] = false;
@@ -53,12 +50,15 @@ void Calc(int num) {
 int main() {
 	cin >> n;
 
-	for (int i = 1; i <= n; i++) {
-		for (int j = 1; j <= n; j++) {
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
 			cin >> arr[i][j];
 		}
 	}
 
+	//1번 지점 부터 탐색 시작.
+	visited[0] = true;
+	v.push_back(0);
 	Calc(1);
 
 	cout << ans;
