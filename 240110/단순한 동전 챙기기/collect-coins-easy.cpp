@@ -81,6 +81,6 @@ int main() {
     if (ans == INT_MAX)
         ans = -1;
 
-    //cout << ans;
+    cout << ans;
     return 0;
 }
