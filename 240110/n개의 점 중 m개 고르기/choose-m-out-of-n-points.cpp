@@ -49,5 +49,6 @@ int main() {
 
 	Calc(0, 0);
 
-	cout << (int)pow(ans,2);
+    //cout << ans << "\n";
+	cout << (int)(round(pow(ans,2)));
 }
