@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int n, zone_cnt = 0 , ans = 0;
+int n, zone_cnt = 0, ans = 0, cnt = 0;
 int arr[101][101];
 bool visited[101][101];
 
@@ -33,15 +33,15 @@ void Initial() {
 
 void DFS(int x, int y, int k) {
 	int dx[] = { -1,1,0,0 };
-	int dy[] = {0 , 0,-1,1};
-
+	int dy[] = { 0 , 0,-1,1 };
+	
 	for (int i = 0; i < 4; i++) {
 		int nx = x + dx[i];
 		int ny = y + dy[i];
 
 		if (CanGo(nx, ny, k)) {
 			visited[nx][ny] = true;
-			zone_cnt++;
+			cnt++;
 			DFS(nx, ny, k);
 		}
 	}
@@ -53,9 +53,15 @@ void Calc(int k) {
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			if (CanGo(i, j, k)) {
+			if (arr[i][j] == k && visited[i][j] == false) {
 				visited[i][j] = true;
+				cnt = 1;
 				DFS(i, j, k);
+				zone_cnt = cnt;
+
+				if (zone_cnt >= 4) {
+					ans++;
+				}
 			}
 		}
 	}
@@ -75,9 +81,9 @@ int main() {
 		Calc(k);
 
 		//터지는 개수.
-		if (zone_cnt >= 4) {
+		/*if (zone_cnt >= 4) {
 			ans++;
-		}
+		}*/
 
 		//이어져 있는 최대값들.
 		if (zone_cnt > ans_cnt) {
