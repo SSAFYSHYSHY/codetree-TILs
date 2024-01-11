@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int n, zone_cnt = 0, ans = 0, cnt = 0;
+int n, zone_cnt = 0, ans = 0, cnt = 0, ans_cnt = 0;
 int arr[101][101];
 bool visited[101][101];
 
@@ -62,6 +62,10 @@ void Calc(int k) {
 				if (zone_cnt >= 4) {
 					ans++;
 				}
+
+				if (zone_cnt > ans_cnt) {
+					ans_cnt = zone_cnt;
+				}
 			}
 		}
 	}
@@ -76,7 +80,6 @@ int main() {
 		}
 	}
 
-	int ans_cnt = 0;
 	for (int k = 1; k <= 100; k++) {
 		Calc(k);
 
@@ -86,9 +89,9 @@ int main() {
 		}*/
 
 		//이어져 있는 최대값들.
-		if (zone_cnt > ans_cnt) {
+		/*if (zone_cnt > ans_cnt) {
 			ans_cnt = zone_cnt;
-		}
+		}*/
 
 
 	}
