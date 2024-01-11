@@ -1,14 +1,11 @@
 #include <iostream>
 #include <algorithm>
-#include <vector>
 
 using namespace std;
 
-int n, m, ans = 0, max_ans = 0, zone_cnt = 0;
+int n, m, ans = 0, max_ans = -1, zone_cnt = 0;
 int arr[51][51] = {0,};
 bool visited[51][51] = {false,};
-
-vector<int> v;
 
 void Initial() {
 	for (int i = 0; i < n; i++) {
@@ -34,8 +31,8 @@ bool CanGo(int x, int y, int k) {
 }
 
 void DFS(int x, int y, int num) {
-	int dx[] = { -1,1,0,0 };
-	int dy[] = {0,0,-1,1};
+	int dx[] = { 0,1,0,-1 };
+	int dy[] = {1,0,-1,0};
 
 	for (int i = 0; i < 4; i++) {
 		int nx = x + dx[i];
