@@ -13,17 +13,10 @@ bool InRange(int x, int y) {
 }
 
 bool CanGo(int x, int y) {
-	if (!InRange(x, y)) {
-		return false;
-	}
-	if (visited[x][y] == true || arr[x][y] == 1) {
-		return false;
-	}
-
-	return true;
+	return InRange(x, y) && !arr[x][y] && !visited[x][y];
 }
 
-void BFS(int num) {
+void BFS() {
 	int dx[] = { -1,1,0,0 };
 	int dy[] = { 0,0,-1,1 };
 	
@@ -40,7 +33,6 @@ void BFS(int num) {
 			if (CanGo(nx, ny)) {
 				q.push(make_pair(nx, ny));
 				visited[nx][ny] = true;
-				cnt++;
 			}
 		}
 
@@ -64,10 +56,18 @@ int main() {
 		y -= 1;
 
 		q.push(make_pair(x, y));
+		visited[x][y] = true;
 	}
 
-	//갯수 시작. k 까지 반복.
-	BFS(0);
+	BFS();
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (visited[i][j]) {
+				cnt++;
+			}
+		}
+	}
 
 	cout << cnt;
 }
