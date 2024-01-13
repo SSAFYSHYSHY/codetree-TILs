@@ -50,8 +50,12 @@ int main() {
 	visited[ss][sy] = true;
 
 	BFS();
+	if(ss == sy && as == ay) {
+		cout << 0;
+		return 0;
+	}
 
-	if (new_arr[as][ay]) {
+	if (new_arr[as][ay] > 0) {
 		cout << new_arr[as][ay];
 	}
 	else {
