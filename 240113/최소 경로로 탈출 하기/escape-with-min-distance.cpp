@@ -54,6 +54,10 @@ int main() {
 	visited[0][0] = true;
 
 	BFS();
-
-	cout << new_arr[n - 1][m - 1];
+    if(new_arr[n-1][m-1] == 0) {
+        cout << -1;
+    }
+    else {
+	    cout << new_arr[n - 1][m - 1];
+    }
 }
