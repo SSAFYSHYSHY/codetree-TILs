@@ -1,17 +1,17 @@
 #include <iostream>
 #include <queue>
+#include <climits>
 
 using namespace std;
 
-int arr[101][101];
 int new_arr[101][101];
 bool visited[101][101];
-int n, ans;
+int n, ans = INT_MAX;
 queue<pair<int, int>> q;
 int ss, sy, as, ay;
 
 bool CanGo(int x, int y) {
-	return 0 < x && x <= n && 0 < y && y <= n;
+	return 0 <= x && x < n && 0 <= y && y < n;
 }
 
 void Calc(int x, int y, int num) {
@@ -39,26 +39,27 @@ void BFS() {
 			}
 		}
 	}
+
+	//도착지에 도달시 값 갱신.
+	if(visited[as][ay]) {
+		ans = new_arr[as][ay];
+	}
 }
 
 int main() {
 	cin >> n;
 	cin >> ss >> sy >> as >> ay;
 
-	q.push(make_pair(ss, sy));
-	new_arr[ss][sy] = 0;
-	visited[ss][sy] = true;
+	ss--;
+	sy--;
+	as--;
+	ay--;
 
+	Calc(ss, sy, 0);
 	BFS();
-	if(ss == sy && as == ay) {
-		cout << 0;
-		return 0;
-	}
 
-	if (new_arr[as][ay] > 0) {
-		cout << new_arr[as][ay];
+	if(ans == INT_MAX){
+		ans = -1;
 	}
-	else {
-		cout << -1;
-	}
+	cout << ans;
 }
