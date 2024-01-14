@@ -63,7 +63,7 @@ int main() {
 		int a, b;
 		cin >> a >> b;
 
-		v.push_back(make_pair(a, b - 1));
+		v.push_back(make_pair(b, a - 1));
 	}
 
 	sort(v.begin(), v.end());
