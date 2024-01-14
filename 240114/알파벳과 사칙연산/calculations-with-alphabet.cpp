@@ -1,71 +1,49 @@
 #include <iostream>
-#include <queue>
+#include <string>
 #include <algorithm>
 #include <vector>
-#include <string>
+#include <climits>
 
 using namespace std;
 
-
-char crr[201];
-char new_crr[201];
 string s;
-int cnt = 0, ans = 0, idx = 0;
-vector<int> v;
+int n, ans = INT_MIN;
+int arr[201];
 
-void Initial() {
-	for (int i = 0; i < idx; i++) {
-		new_crr[i] = crr[i];
-	}
+int Calc3(int idx) {
+	return arr[s[idx] - 'a'];
 }
 
 int Calc2() {
-	int sum = v[0];
+	int ans = Calc3(0);
 
-	Initial();
-
-	int num = 0;
-	for (int i = 1; i < v.size(); i++) {
-		if (new_crr[num] == '+') {
-			sum += v[i];
+	for (int i = 2; i < n; i += 2) {
+		if (s[i - 1] == '+') ans += Calc3(i);
+		else if (s[i - 1] == '-') ans -= Calc3(i);
+		else {
+			ans *= Calc3(i);
 		}
-		else if (new_crr[num] == '-') {
-			sum -= v[i];
-		}
-		else if (new_crr[num] == '*') {
-			sum *= v[i];
-		}
-		num++;
 	}
 
-	return sum;
+	return ans;
 }
 
 void Calc(int num) {
-	if (num == cnt) {
+	if (num == n) {
 		ans = max(ans, Calc2());
 		return;
 	}
 
 	for (int i = 1; i <= 4; i++) {
-		v.push_back(i);
+		arr[num] = i;
 		Calc(num + 1);
-		v.pop_back();
 	}
 }
 
 int main() {
 	cin >> s;
 
-	for (int i = 0; i < s.length(); i++) {
-		if ('a' <= s[i] && s[i] <= 'z') {
-			cnt++;
-		}
-		else {
-			crr[idx] = s[i];
-			idx++;
-		}
-	}
+	n = s.length();
 
 	Calc(0);
 
