@@ -17,7 +17,7 @@ int Calc3(int idx) {
 int Calc2() {
 	int ans = Calc3(0);
 
-	for (int i = 2; i < n; i += 2) {
+	for (int i = 2; i <= n; i += 2) {
 		if (s[i - 1] == '+') ans += Calc3(i);
 		else if (s[i - 1] == '-') ans -= Calc3(i);
 		else {
