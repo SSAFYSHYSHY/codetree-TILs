@@ -7,7 +7,7 @@ using namespace std;
 int n, m;
 
 int ans = 0;
-int dp[101];
+int dp[10001];
 int arr[101];
 
 void Initial() {
