@@ -16,6 +16,10 @@ void Initial() {
 		for (int j = 0; j < n; j++) {
 			visited[i][j] = false;
 			new_arr[i][j] = 0;
+
+            if(arr[i][j] == 1) {
+                visited[i][j] = true;
+            }
 		}
 	}
 
@@ -79,13 +83,12 @@ int main() {
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			Initial();
 			
 			if (arr[i][j] == 2) {
-				Push(i, j, 0);
-				int a = BFS();
-
-				ans[i][j] = a;
+                
+				Initial();
+                Push(i,j,0);
+				ans[i][j] = BFS();
 			}
 		}
 	}
