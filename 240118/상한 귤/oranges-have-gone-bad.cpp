@@ -62,8 +62,8 @@ int main() {
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			
-			if (new_arr[i][j] == 0 && arr[i][j] == 1) {
-				cout << -2;
+			if (!visited[i][j] && arr[i][j] == 1) {
+				cout << -2 << " ";
 			}
 			else {
 				cout << new_arr[i][j] << " ";
