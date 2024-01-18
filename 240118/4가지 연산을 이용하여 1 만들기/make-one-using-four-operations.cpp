@@ -1,33 +1,55 @@
 #include <iostream>
 #include <queue>
-#include <algorithm>
 
 using namespace std;
 
-int n, mini = 21e8, cnt = 0;
 queue<int> q;
+int n, ans =0;
 bool visited[1000001];
 int arr[1000001];
-int new_arr[1000001];
 
 bool InRange(int x) {
-	return 0 <= x && x <= n;
+	return 1 <= x && x <= 1000001;
 }
 
 void BFS() {
+	int nx = 0;
+
 	while (!q.empty()) {
-		int a = q.front();
-		int dx[] = { -1, 1 , a*2, a*3 };
+		int na = q.front();
 		q.pop();
 
-		for (int i = 0; i < 4; i++) {
-			int na = a + dx[i];
+		if (na == 1) {
+			ans = arr[1];
+			return;
+		}
 
-			if (InRange(na) && !visited[na]) {
-				new_arr[na] = new_arr[a] + 1;
-				visited[na] = true;
-				q.push(na);
-			}
+		//-1
+		if (InRange(na - 1) && !visited[na - 1]) {
+			visited[na-1] = true;
+			q.push(na-1);
+			arr[na - 1] = arr[na] + 1;
+		}
+
+		// +1
+		if (InRange(na + 1) && !visited[na + 1]) {
+			visited[na+1] = true;
+			q.push(na+1);
+			arr[na + 1] = arr[na] + 1;
+		}
+
+		// / 2
+		if (na % 2 == 0 && !visited[na/2]) {
+			visited[na/2] = true;
+			q.push(na/2);
+			arr[na / 2] = arr[na] + 1;
+		}
+
+		// / 3
+		if (na % 3 == 0 && !visited[na/3]) {
+			visited[na/3] = true;
+			q.push(na/3);
+			arr[na / 3] = arr[na] + 1;
 		}
 
 	}
@@ -36,14 +58,10 @@ void BFS() {
 int main() {
 	cin >> n;
 
-	for (int i = 0; i <= n; i++) {
-		arr[i] = i;
-	}
+	q.push(n);
+	visited[n] = true;
 
-	new_arr[1] = 1;
-	visited[arr[1]] = true;
-	q.push(arr[1]);
 	BFS();
 
-	cout << new_arr[n-1];
+	cout << ans;
 }
