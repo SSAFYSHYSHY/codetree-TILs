@@ -60,6 +60,14 @@ void Calc(int num) {
 	if (num == k) {
 		Initial();
 		BFS();
+
+		//for (int i = 0; i < n; i++) {
+		//	for (int j = 0; j < n; j++) {
+		//		cout << ans[i][j] << " ";
+		//	}
+		//	cout << "\n";
+		//}
+		//cout << "\n\n";
 		return;
 	}
 
@@ -82,8 +90,6 @@ int main() {
 			cin >> arr[i][j];
 		}
 	}
-
-	int x, y;
 	cin >> x >> y;
 	cin >> ax >> ay;
 
@@ -91,6 +97,7 @@ int main() {
 	y -= 1;
 	ax -= 1;
 	ay -= 1;
+
 	//백트래킹.
 	Calc(0);
 
