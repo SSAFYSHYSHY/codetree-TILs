@@ -61,5 +61,5 @@ int main(){
 		ans = min(ans, upper - lower);
 	}
 
-	//cout << ans;
+	cout << ans;
 }
