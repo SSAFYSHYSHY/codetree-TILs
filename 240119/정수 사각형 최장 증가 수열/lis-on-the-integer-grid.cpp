@@ -1,12 +1,14 @@
 #include <iostream>
 #include <algorithm>
+#include <tuple>
 #include <vector>
 
 using namespace std;
 
-int n;
+int n, ans =0;
 int arr[501][501];
 int dp[501][501];
+vector<tuple<int, int, int>> v;
 
 int dx[] = { -1,1,0,0 };
 int dy[] = { 0,0,-1,1 };
@@ -15,23 +17,12 @@ bool InRange(int x, int y) {
 	return 0 <= x && x < n && 0 <= y && y < n;
 }
 
-int Calc(int x, int y, int cnt) {
-	if (dp[x][y]) {
-		return dp[x][y];
-	}
-	
-	int max_cnt = 0;
-	for (int i = 0; i < 4; i++) {
-		int nx = x + dx[i];
-		int ny = y + dy[i];
-
-		if (InRange(nx, ny) && arr[nx][ny] > arr[x][y]) {
-			max_cnt = max(max_cnt, cnt + Calc(nx, ny, cnt));
+void Initial() {
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			dp[i][j] = 1;
 		}
 	}
-
-	dp[x][y] = max_cnt;
-	return max_cnt;
 }
 
 int main() {
@@ -45,20 +36,32 @@ int main() {
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			if (!dp[i][j]) {
-				Calc(i, j, 1);
-			}
+			v.push_back(make_tuple(arr[i][j], i, j));
 		}
 	}
-	
-	int ans = 0;
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (ans < dp[i][j]) {
-				ans = dp[i][j];
+
+	sort(v.begin(), v.end());
+	Initial();
+
+	for (int i = 0; i < v.size(); i++) {
+		int x, y;
+		tie(ignore, x, y) = v[i];
+
+		for (int j = 0; j < 4; j++) {
+			int nx = x + dx[j];
+			int ny = y + dy[j];
+
+			if (InRange(nx, ny) && arr[nx][ny] > arr[x][y]) {
+				dp[nx][ny] = max(dp[nx][ny], dp[x][y] + 1);
 			}
 		}
 	}
 
-	cout << ans + 1;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			ans = max(ans, dp[i][j]);
+		}
+	}
+
+	cout << ans;
 }
