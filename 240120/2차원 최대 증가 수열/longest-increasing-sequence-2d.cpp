@@ -22,7 +22,7 @@ int main() {
 	Initial();
 
 	for (int x = 1; x < n; x++) {
-		for (int y = 1; y < n; y++) {
+		for (int y = 1; y < m; y++) {
 			for (int i = 0; i < x; i++) {
 				for (int j = 0; j < y; j++) {
 					if (arr[x][y] > arr[i][j]) {
@@ -35,7 +35,7 @@ int main() {
 
 	int ans = 0;
 	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
+		for (int j = 0; j < m; j++) {
 			ans = max(ans, dp[i][j]);
 		}
 	}
