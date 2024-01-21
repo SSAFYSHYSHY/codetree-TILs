@@ -35,5 +35,5 @@ int main() {
 	for (int j = 0; j <= m; j++) {
 		ans = max(ans, dp[j]);
 	}
-	//cout << ans;
+	cout << ans;
 }
