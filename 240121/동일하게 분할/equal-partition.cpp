@@ -6,8 +6,8 @@
 using namespace std;
 
 int n, m;
-int arr[101];
-bool dp[101][1001];
+int arr[10001];
+bool dp[10001][10001];
 
 void Initial() {
 	dp[0][0] = true;
