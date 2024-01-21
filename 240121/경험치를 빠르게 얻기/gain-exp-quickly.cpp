@@ -55,6 +55,6 @@ int main() {
 		ans = -1;
 	}
 
-	//cout << ans;
+	cout << ans;
 
 }
