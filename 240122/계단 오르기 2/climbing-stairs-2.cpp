@@ -3,19 +3,9 @@
 
 using namespace std;
 
-int arr[1001];
-int dp[1001][1001];
+int arr[1005];
+int dp[1005][5];
 int n;
-
-void Initial() {
-	for (int i = 0; i <= 2 * n; i++) {
-		for (int j = 0; j <= 2 * n; j++) {
-			dp[i][j] = INT_MIN;
-		}
-	}
-
-	dp[0][0] = 0;
-} 
 
 int main() {
 	cin >> n;
@@ -26,7 +16,7 @@ int main() {
 
 	dp[1][1] = arr[1];
 	dp[2][0] = arr[2];
-	dp[2][1] = arr[1] + arr[2];
+	dp[2][2] = arr[1] + arr[2];
 
 	//최대 가치를 출력.
 	//i 번재 위치에 도착했을때, 정확히 j 번 1계단 올랐을때의 최대 가치.
