@@ -11,9 +11,9 @@ vector<int> e;
 vector<int> v;
 
 void Initial() {
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
-			for (int k = 0; k < N; k++) {
+	for (int i = 0; i < 201; i++) {
+		for (int j = 0; j < 201; j++) {
+			for (int k = 0; k < 201; k++) {
 				dp[i][j][k] = INT_MIN;
 			}
 		}
