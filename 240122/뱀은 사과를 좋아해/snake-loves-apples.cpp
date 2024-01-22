@@ -19,6 +19,7 @@ bool InRange(int x, int y) {
 
 bool Calc(int dir, int walk) {
 	for (int i = 0; i < walk; i++) {
+        cnt++;
 		dir_arr[head.first][head.second] = dir;
 		int nx = head.first + dx[dir];
 		int ny = head.second + dy[dir];
@@ -46,12 +47,12 @@ bool Calc(int dir, int walk) {
 		arr[head.first][head.second] = 1;
 
 		//꼬리의 움직임.
-		int dirt = arr[tail.first][tail.second];
+		int dirt = dir_arr[tail.first][tail.second];
 		arr[tail.first][tail.second] = 0;
 		tail.first += dx[dirt];
 		tail.second += dy[dirt];
 
-		cnt++;
+		//cnt++;
 	}
 
 	return false;
