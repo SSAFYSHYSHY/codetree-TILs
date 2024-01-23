@@ -3,29 +3,24 @@
 
 using namespace std;
 
-unordered_map<int, int> v;
+unordered_map<long long, int> v;
 int n, k;
-int arr[100001];
+long long arr[100001];
 
 int main() {
 	cin >> n >> k;
 
 	for (int i = 0; i < n; i++) {
 		cin >> arr[i];
-		v[i] = arr[i];
 	}
 
 	int cnt = 0;
 	for (int i = 0; i < n; i++) {
-		int sum = 0;
-		for (int j = i+1; j < n; j++) {
-			sum = v[i] + v[j];
+		long long diff = (long long)k - arr[i];
 
-			if (sum == k) {
-				cnt++;
-				sum = 0;
-			}
-		}
+        cnt += v[diff];
+
+        v[arr[i]]++;
 	}
 	cout << cnt;
 }
