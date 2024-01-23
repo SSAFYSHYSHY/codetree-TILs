@@ -15,7 +15,7 @@ int main() {
 	for (int i = 0; i < n; i++) {
 		cin >> arr[i];
 
-		v[arr[i]] = i+1;
+		v[arr[i]]++;
 	}
 
 	for (int i = 0; i < m; i++) {
