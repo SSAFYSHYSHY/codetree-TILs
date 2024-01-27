@@ -21,7 +21,7 @@ int main() {
 
 	for (int i = 0; i <= n; i++) {
 		for (int j = 0; j <= m; j++) {
-			dp[i][j][NOT_b] = dp[i][j][b] = INT_MIN;
+			dp[i][j][NOT_b] = dp[i][j][b] = -500000;
 		}
 	}
 
