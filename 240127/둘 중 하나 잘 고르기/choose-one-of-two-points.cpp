@@ -40,7 +40,7 @@ int main() {
 		}
 	}
 
-	int ans = Calc( n, n);
+	int ans = Calc( 2*n, n);
 
 	cout << ans;
 }
