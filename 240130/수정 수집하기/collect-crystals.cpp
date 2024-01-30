@@ -49,8 +49,8 @@ int main() {
     }
 
     int ans = 0;
-    for(int j = 0; j < k; j++) {
-        ans = max(ans, dp[n][j][0]);
+    for(int j = 0; j <= k; j++) {
+        ans = max(ans, dp[n][j][1]);
         ans = max(ans, dp[n][j][1]);
     }
 
