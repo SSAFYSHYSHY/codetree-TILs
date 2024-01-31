@@ -42,7 +42,7 @@ int main() {
     }
 
     for(auto it = lcs.rbegin(); it != lcs.rend(); ++it) {
-        cout << it;
+        cout << *it;
     }
 
     return 0;
