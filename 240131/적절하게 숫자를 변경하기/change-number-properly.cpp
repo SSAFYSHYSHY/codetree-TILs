@@ -50,7 +50,7 @@ int main() {
     int ans = 0;
 
     for(int j = 0; j <= m; j++)
-        for(int k = 1; k < MAX_K; k++)
+        for(int k = 1; k <= MAX_K; k++)
             ans = max(ans, dp[n][j][k]);
 
     cout << ans;
