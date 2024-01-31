@@ -32,7 +32,7 @@ int main() {
         }
 
         cout << cur_l << " ";
-        cur_m = cur_l;
+        cur_m -= cur_l;
     }
 
     return 0;
