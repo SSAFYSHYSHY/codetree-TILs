@@ -5,33 +5,27 @@
 using namespace std;
 
 int n, m;
-unordered_map<int, string> nodes;
+string s[100001];
+unordered_map<string, int> nodes;
 
 int main() {
 	cin >> n >> m;
 
-	for (int i = 0; i < n; i++) {
-		string s;
-		cin >> s;
+	for (int i = 1; i <= n; i++) {
+		cin >> s[i];
 
-		nodes[i] = s;
+		nodes[s[i]] = i;
 	}
 
 	for (int i = 0; i < m; i++) {
-		string s;
-		cin >> s;
+		string key;
+		cin >> key;
 
-		if ("0" <= s && s <= "9") {
-			int num = stoi(s);
-
-			cout << nodes[num-1] << "\n";
+		if ('0' <= key[0] && key[0] <= '9') {
+			cout << s[stoi(key)] << "\n";
 		}
 		else {
-			for (int j = 0; j < n; j++) {
-				if (nodes[j] == s) {
-					cout << j+1 << "\n";
-				}
-			}
+			cout << nodes[key] << "\n";
 		}
 	}
 }
