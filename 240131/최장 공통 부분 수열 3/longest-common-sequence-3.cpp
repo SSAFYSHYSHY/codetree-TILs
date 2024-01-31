@@ -52,7 +52,7 @@ int main() {
         }
     }
 
-    for(int i = 0; i <= lcs.size(); i++) {
+    for(int i = 0; i < lcs.size(); i++) {
         cout << lcs[i] << " ";
     }
 
