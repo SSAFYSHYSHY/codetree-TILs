@@ -34,7 +34,7 @@ int main() {
         }
     }
 
-    if(!is_pos[n][m]) cout << "true";
+    if(is_pos[n][m]) cout << "true";
     else cout << "false";
 
     return 0;
