@@ -36,7 +36,7 @@ int main() {
         }
 
     int ans = INF;
-    for(int j = 0; j < 9; j++) {
+    for(int j = 0; j <= 9; j++) {
         ans = min(ans, dp[n][j]);
     }
 
