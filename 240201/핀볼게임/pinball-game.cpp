@@ -5,8 +5,8 @@ using namespace std;
 
 int arr[101][101];
 int new_arr[101][101];
-int n , ans = 0;
-bool visited[101][101] = {false,};
+int n, ans = 0;
+int visited[101][101] = { 0, };
 
 //하,좌,우,상.
 int dx[] = { 1, 0,0,-1 };
@@ -50,7 +50,7 @@ void Rotate() {
 void Initial() {
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			visited[i][j] = false;
+			visited[i][j] = 0;
 		}
 	}
 }
@@ -59,87 +59,70 @@ bool InRange(int x, int y) {
 	return 0 <= x && x < n && 0 <= y && y < n;
 }
 
-void Calc2(int x, int y, int dir) {
-	x += dx[dir];
-	y += dy[dir];
-	visited[x][y] = true;
+//방향 연산.
+int Calc2(int x, int y, int dir) {
+	if (arr[x][y] == 1) {
+		if (dir == D) {
+			dir = L;
+		}
+		else if (dir == U) {
+			dir = R;
+		}
+		else if (dir == L) {
+			dir = D;
+		}
+		else if (dir == R) {
+			dir = U;
+		}
+	}
+	else if (arr[x][y] == 2) {
+		if (dir == D) {
+			dir = R;
+		}
+		else if (dir == U) {
+			dir = L;
+		}
+		else if (dir == L) {
+			dir = U;
+		}
+		else if (dir == R) {
+			dir = D;
+		}
+	}
+
+	return dir;
 }
 
 int Calc(int x, int y, int dir) {
-	
+
 	//방문 섹터 초기화.
 	Initial();
-	
+
 	//횟수, 해당 좌표의 방문 표시.
 	int cnt = 1;
-	visited[x][y] = true;
 
 	//범위 밖으로 나가거나 방문이 되었을 때까지 반복.
-	while (InRange(x, y)) {
+	while (1) {
+		int nx = 0, ny = 0;
 
+		dir = Calc2(x,y,dir);
+		nx = x + dx[dir];
+		ny = y + dy[dir];
+
+		//가고자 하는 방향 체크.
+		//범위 안에 있지 않으면.
+		if (!InRange(nx, ny)) {
+			return cnt += 1;
+		}
+		//무한 반복인가. 
+		if (visited[nx][ny] == 2) {
+			return 0;
+		}
+
+		visited[nx][ny]++;
+		x = nx;
+		y = ny;
 		cnt++;
-
-		//1 이면 좌로, 2 이면 우로.
-		if (arr[x][y] == 1) {
-			//상이냐, 하냐에 따라서 조건이 나뉨.
-			if (dir == D) {
-				dir = L;
-				x += dx[dir];
-				y += dy[dir];
-				visited[x][y] = true;
-			}
-			else if(dir == U) {
-				dir = R;
-				x += dx[dir];
-				y += dy[dir];
-				visited[x][y] = true;
-			}
-			else if (dir == L) {
-				dir = D;
-				x += dx[dir];
-				y += dy[dir];
-				visited[x][y] = true;
-			}
-			else if (dir == R) {
-				dir = U;
-				x += dx[dir];
-				y += dy[dir];
-				visited[x][y] = true;
-			}
-		}
-		else if (arr[x][y] == 2) {
-			if (dir == D) {
-				dir = L;
-				x += dx[dir];
-				y += dy[dir];
-				visited[x][y] = true;
-			}
-			else if (dir == U) {
-				dir = R;
-				x += dx[dir];
-				y += dy[dir];
-				visited[x][y] = true;
-			}
-			else if (dir == L) {
-				dir = U;
-				x += dx[dir];
-				y += dy[dir];
-				visited[x][y] = true;
-			}
-			else if (dir == R) {
-				dir = D;
-				x += dx[dir];
-				y += dy[dir];
-				visited[x][y] = true;
-			}
-			
-		}
-		//0인 값이면 그냥 해당 방향으로 계속 전진.
-		else {
-			x += dx[dir];
-			y += dy[dir];
-			visited[x][y] = true;
-		}
 	}
 
 	return cnt;
@@ -165,7 +148,7 @@ int main() {
 	}
 
 	//1 -> /   2 -> 
-	for (int idx = 0; idx < 3; idx++) {
+	for (int idx = 0; idx < 4; idx++) {
 		//시뮬 시작. 한 줄만 비교하면 됨.
 		Simul();
 
