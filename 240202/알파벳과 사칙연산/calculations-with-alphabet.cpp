@@ -9,38 +9,29 @@ int n, ans = -21e8;
 string s;
 string alpha, oper;
 vector<int> v;
-unordered_map<char, int> key{
-	{'a', 0},
-	{'b', 1},
-	{'c', 2},
-	{'d', 3},
-	{'e', 4},
-	{'f', 5}
-};
+int num[7];
 
+int Conv(int idx) {
+	return num[s[idx] - 'a'];
+}
 
 int Calc2() {
+	int len = (int)s.size();
+	int value = Conv(0);
 
-	string sum; 
-	sum += to_string(v[key[alpha[0]]]);
-	for (int i = 0; i < n ; i++) {
-		sum = sum + oper[i] + to_string(v[key[alpha[i + 1]]]);
-	}
-
-	int num = (sum[0] - '0');
-	for (int i = 2; i < sum.length(); i+=2) {
-		if (sum[i-1] == '+') {
-			num += (sum[i] - '0');
+	for (int i = 2; i < len; i+=2) {
+		if (s[i-1] == '+') {
+			value += Conv(i);
 		}
-		else if (sum[i-1] == '-') {
-			num -= (sum[i] - '0');
+		else if (s[i-1] == '-') {
+			value -= Conv(i);
 		}
-		else if (sum[i-1] == '*') {
-			num *= (sum[i] - '0');
+		else if (s[i-1] == '*') {
+			value *= Conv(i);
 		}
 	}
 
-	return num;
+	return value;
 }
 
 void Calc(int now) {
@@ -50,24 +41,13 @@ void Calc(int now) {
 	}
 
 	for (int i = 1; i <= 4; i++) {
-		v.push_back(i);
+		num[now] = i;
 		Calc(now + 1);
-		v.pop_back();
 	}
 }
 
 int main() {
 	cin >> s;
-
-	for (int i = 0; i < s.length(); i++) {
-		if (isalpha(s[i])) {
-			alpha += s[i];
-		}
-		else {
-			n++;
-			oper += s[i];
-		}
-	}
 
 	Calc(0);
 
