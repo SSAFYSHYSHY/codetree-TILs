@@ -24,21 +24,18 @@ int main() {
 	int ans = 0;
 	for (int i = 0; i < n; i++) {
 		for (int j = i + 1; j < n; j++) {
-			int sum = arr[i] + arr[j];
+            v[arr[i]]--;
+            v[arr[j]]--;
 
-			if (v.find(k - sum) == v.end()) {
-				continue;
-			}
-			if (k - sum == arr[i]) {
-				ans -= 1;
-			}
-			if (k - sum == arr[i]) {
-				ans -= 1;
-			}
+            int sum = arr[i] + arr[j];
+            if(v.find(k - sum) != v.end()) {
+                ans += v[k-sum];
+            }
 
-			ans += v[k - sum];
-		}
+            v[arr[i]]++;
+            v[arr[j]]++;
+		} 
 	}
 
-	cout << ans / 3;
+	cout << ans/3;
 }
