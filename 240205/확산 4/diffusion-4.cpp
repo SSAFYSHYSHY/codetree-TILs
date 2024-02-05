@@ -6,8 +6,8 @@
 using namespace std;
 
 queue<pair<int, int>> q;
-bool visited[302][302] = {false,};
-int arr[302][302];
+bool visited[500][500] = {false,};
+int arr[500][500];
 int n, m, s;
 
 void Initial() {
