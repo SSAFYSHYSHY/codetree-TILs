@@ -16,20 +16,12 @@ int main() {
 		v[s[i]]++;
 	}
 
-	char c;
-	bool flag = false;
 	for (int i = 0; i < s.length(); i++) {
-		if (v[s[i]] == 1 && !flag) {
-			c = s[i];
-			flag = true;
-			break;
+		if (v[s[i]] == 1) {
+			cout << s[i];
+			return 0;
 		}
 	}
 
-	if (flag == true) {
-		cout << c;
-	}
-	else {
-		cout << "None";
-	}
+	cout << "None";
 }
