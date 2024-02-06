@@ -5,9 +5,15 @@ using namespace std;
 
 int n, m;
 set<int> s;
+int cnt = 0;
 
 int main() {
 	cin >> n >> m;
+
+	if (n == 1) {
+		cout << 1;
+		return 0;
+	}
 
 	for (int i = 1; i <= m; i++) {
 		s.insert(i);
@@ -23,6 +29,7 @@ int main() {
 			if (s.count(j) == 1) {
 				s.erase(j);
 				flag = true;
+				cnt++;
 				break;
 				
 			}
@@ -32,8 +39,9 @@ int main() {
 		}
 
 		if (flag == false) {
-			cout << s.size();
-			return 0;
+			break;
 		}
 	}
+
+	cout << cnt;
 }
