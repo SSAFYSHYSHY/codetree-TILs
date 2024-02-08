@@ -7,9 +7,9 @@
 
 using namespace std;
 
-int arr[6][6];
-bool visited[6];
-int dist[6];
+int arr[1001][1001];
+bool visited[1001];
+int dist[1001];
 vector<tuple<int, int, int>> v;
 
 int main() {
