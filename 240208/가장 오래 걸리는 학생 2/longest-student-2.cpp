@@ -7,9 +7,9 @@
 
 using namespace std;
 
-vector<pair<int, int>> v[20001];
+vector<pair<int, int>> v[200001];
 priority_queue<pair<int, int>> pq;
-int dist[300001];
+int dist[3000001];
 int n, m;
 
 void Dijk() {
