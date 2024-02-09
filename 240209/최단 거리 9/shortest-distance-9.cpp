@@ -7,7 +7,7 @@
 using namespace std;
 
 int n, m,s,e;
-vector<pair<int, int>> v[1001];
+vector<pair<int, int>> v[100001];
 priority_queue<pair<int, int>> pq;
 int dist[100001];
 int path[100001];
@@ -62,12 +62,7 @@ void Print() {
 		ve.push_back(x);
 	}
 
-	int ans = 0;
-	for (int i = 1; i <= n; i++) {
-		ans = max(ans, dist[i]);
-	}
-
-	cout << ans << "\n";
+    cout << dist[e] << "\n";
 
 	for (int i = ve.size() - 1; i >= 0; i--) {
 		cout << ve[i] << " ";
