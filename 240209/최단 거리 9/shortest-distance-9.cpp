@@ -62,7 +62,13 @@ void Print() {
 		ve.push_back(x);
 	}
 
-	cout << ve.size() - 1 << "\n";
+	int ans = 0;
+	for (int i = 1; i <= n; i++) {
+		ans = max(ans, dist[i]);
+	}
+
+	cout << ans << "\n";
+
 	for (int i = ve.size() - 1; i >= 0; i--) {
 		cout << ve[i] << " ";
 	}
