@@ -76,6 +76,7 @@ int main() {
 		cin >> x >> y >> w;
 
 		v[x].push_back(make_pair(y, w));
+		v[y].push_back(make_pair(x, w));
 	}
 	cin >> s >> e;
 
