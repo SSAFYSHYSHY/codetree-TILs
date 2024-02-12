@@ -7,7 +7,7 @@ long long m, a, b;
 long long min_num = 21e8;
 long long max_num = 0;
 
-long long Calc(int num) {
+long long Calc(long long num) {
 	long long left = 1;
 	long long right = m;
 	long long cnt = 0;
@@ -34,7 +34,7 @@ long long Calc(int num) {
 int main() {
 	cin >> m >> a >> b;
 
-	for (int i = a; i <= b; i++) {
+	for (long long i = a; i <= b; i++) {
 		min_num = min(min_num, Calc(i));
 		max_num = max(max_num, Calc(i));
 	}
