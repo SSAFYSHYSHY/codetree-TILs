@@ -1,20 +1,29 @@
-#include<iostream>
+#include <iostream>
+#include <algorithm>
+
 using namespace std;
+
 long long s;
 
 int main() {
 	cin >> s;
-	long long sum = 0;
-	long long num = 0;
 
-	while (sum < s) {
-		num++;
-		sum += num;
+	long long left = 1;
+	long long right = 2000000000;
+	long long min_num = 0;
+
+	while (left <= right) {
+		long long mid = (left + right) / 2;
+
+		if (mid * (mid + 1) / 2 <= s) {
+			left = mid + 1;
+			min_num = max(min_num, mid);
+		}
+		else {
+			right = mid - 1;
+		}
 	}
-	if(sum>s)
-		cout << num - 1;
-	else
-		cout << num;
+	
+	cout << min_num;
 
-	return 0;
 }
