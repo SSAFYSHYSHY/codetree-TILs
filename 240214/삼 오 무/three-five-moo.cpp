@@ -14,8 +14,8 @@ int main() {
 	cin >> n;
 
 	long long left = 1;
-	long long right = 1000000000;
-	long long min_num = 1000000000;
+	long long right = 2000000000;
+	long long min_num = 2000000000;
 
 	while (left <= right) {
 		long long mid = (left + right) / 2;
