@@ -9,57 +9,41 @@ int arr[21][21];
 bool visited[21] = { false, };
 int n, ans = INT_MAX;
 
-vector<int> v1;
-vector<int> v2;
+int Calc2(){
+    int sum = 0 , sum1= 0;
+    for(int i = 1; i <= n ; i++) {
+        for(int j = 1; j <= n ; j++) {
+            if(i==j) continue;
 
-void Calc2() {
-	v2.clear();
-	for (int i = 1; i <= n; i++) {
-		if (!visited[i]) {
-			v2.push_back(i);
-		}
-	}
+            if(!visited[i] && !visited[j]) {
+                sum += arr[i][j];
+            }
+            if(visited[i] && visited[j]){
+                sum1 += arr[i][j];
+            }
+        }
+    }
+
+    return abs(sum - sum1);
 }
 
-int Calc3() {
-	int sum = 0;
-	int sum1 = 0;
-
-	for (int i = 0; i < (n/2); i++) {
-		for (int j = 0; j < (n / 2); j++) {
-			if (v1[i] == v1[j]) continue;
-
-			sum += arr[v1[i]][v1[j]];
-		}
-	}
-
-	for (int i = 0; i < (n / 2); i++) {
-		for (int j = 0; j < (n / 2); j++) {
-			if (v2[i] == v2[j]) continue;
-
-			sum1 += arr[v2[i]][v2[j]];
-		}
-	}
-
-	return abs(sum - sum1);
-}
-
-void Calc(int num) {
-	if (num == (n / 2)) {
-		Calc2();
-		ans = min(ans, Calc3());
+void Calc(int curr, int cnt) {
+	if (cnt == (n / 2)) {
+		ans = min(ans, Calc2());
 		return;
 	}
 
-	for (int i = 1; i <= n; i++) {
-		if (!visited[i]) {
-			v1.push_back(i);
-			visited[i] = true;
-			Calc(num + 1);
-			visited[i] = false;
-			v1.pop_back();
-		}
-	}
+    if(curr == n) {
+        return ;
+    }
+
+    Calc(curr + 1, cnt);
+
+    visited[curr] = true;
+    Calc(curr + 1, cnt + 1);
+    visited[curr] = false;
+
+	
 }
 
 int main() {
@@ -71,7 +55,7 @@ int main() {
 		}
 	}
 
-	Calc(0);
+	Calc(0, 0);
 
 	cout << ans;
 }
