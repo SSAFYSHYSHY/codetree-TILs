@@ -1,92 +1,87 @@
-#include <iostream>
-#include <unordered_map>
+#include <bits/stdc++.h>
+
+#define MAX_N (250000)
 
 using namespace std;
 
-class Node {
-public:
-    Node* left;
-    int idx;
-    Node* right;
+struct Node {
+    int id;
+    Node *prev, *next;
 
-    Node(int idx) : idx(idx), left(nullptr), right(nullptr) {}
+    Node(int id) : id(id), prev(nullptr), next(nullptr) {}
 };
 
-void connect(Node* n1, Node* n2) {
-    if (n1 != nullptr) {
-        n1->right = n2;
-    }
-    if (n2 != nullptr) {
-        n2->left = n1;
-    }
+Node *nodes[MAX_N] = {};
+
+// 두 노드를 연결해줍니다.
+void connect(Node *s, Node *e) {
+    if (nullptr != s)
+        s->next = e;
+    if (nullptr != e)
+        e->prev = s;
 }
 
-void popAndInterchange(Node* n1, Node* n2, Node* n3, Node* n4) {
-    bool check = false;
-    Node* n1Left = n1->left;
-    Node* n2Right = n2->right;
-    Node* n3Left = n3->left;
-    Node* n4Right = n4->right;
+// 부분 배열의 위치를 바꿔줍니다.
+void swapSubarray(Node *a, Node *b, Node *c, Node *d) {
+    // 연결된 이후 각각 a의 이전노드, b의 이후노드, c의 이전노드, d의 이후노드가
+    // 무엇인지 기록합니다.
+	Node *after_prevA = c->prev;
+	Node *after_nextB = d->next;
 
-    if (n2->right == n3) {
-        check = true;
-    }
+	Node *after_prevC = a->prev;
+	Node *after_nextD = b->next;
 
-    connect(n1->left, n2->right);
-    n1->left = n2->right = nullptr;
-    connect(n3->left, n4->right);
-    n3->left = n4->right = nullptr;
+	// b와 c가 붙어있는 경우 예외 처리를 해줍니다.
+	if (b->next == c) {
+		after_prevA = d;
+		after_nextD = a;
+	}
+	// d와 a가 붙어있는 경우 예외 처리를 해줍니다.
+	if (d->next == a) {
+		after_nextB = c;
+		after_prevC = b;
+	}
 
-    if (check) {
-        connect(n1Left, n3);
-        connect(n2, n4Right);
-        connect(n4, n1);
-    } else {
-        connect(n4, n2Right);
-        connect(n1Left, n3);
-        connect(n3Left, n1);
-        connect(n2, n4Right);
-    }
+    // 각각의 노드를 연결합니다.
+	connect(after_prevA, a);
+	connect(b, after_nextB);
+
+	connect(after_prevC, c);
+	connect(d, after_nextD);
 }
 
 int main() {
-    unordered_map<int, Node*> nodeMap;
+    int n;
+    cin >> n;
 
-    int N, Q;
-    cin >> N >> Q;
+    // N개의 노드를 생성합니다.
+    for (int i = 1; i <= n; i++)
+        nodes[i] = new Node(i);
 
-    for (int i = 1; i <= N; i++) {
-        Node* node = new Node(i);
-        nodeMap[i] = node;
-        if (nodeMap.find(i - 1) != nodeMap.end()) {
-            connect(nodeMap[i - 1], nodeMap[i]);
-        }
-    }
+    // 1부터 N번 까지의 노드를 차례로 연결해줍니다.
+    for (int i = 1; i < n; i++)
+        connect(nodes[i], nodes[i + 1]);
 
-    Node* head = nodeMap[1];
-    for (int i = 0; i < Q; i++) {
+    int q;
+    cin >> q;
+
+    // 연산을 진행합니다.
+    for (int i = 0; i < q; i++) {
         int a, b, c, d;
         cin >> a >> b >> c >> d;
-        popAndInterchange(nodeMap[a], nodeMap[b], nodeMap[c], nodeMap[d]);
-        if (nodeMap[c]->left == nullptr) {
-            head = nodeMap[c];
-        } else if (nodeMap[a]->left == nullptr) {
-            head = nodeMap[a];
-        }
+
+        swapSubarray(nodes[a], nodes[b], nodes[c], nodes[d]);
     }
 
-    // 출력부
-    while (head->right != nullptr) {
-        cout << head->idx << " ";
-        head = head->right;
-    }
-    cout << head->idx;
+    // 연산이 끝나고 제일 앞에 있는 노드를 찾습니다.
+    Node *cur = nodes[1];
 
-    // 메모리 해제
-    for (auto& kv : nodeMap) {
-        delete kv.second;
-    }
-    nodeMap.clear();
+    while (nullptr != cur->prev)
+        cur = cur->prev;
 
-    return 0;
+    // 해당 노드부터 끝까지 출력을 합니다.
+    while (nullptr != cur) {
+        cout << cur->id << ' ';
+        cur = cur->next;
+    }
 }
