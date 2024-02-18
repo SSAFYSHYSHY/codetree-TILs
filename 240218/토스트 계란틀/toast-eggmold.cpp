@@ -1,24 +1,21 @@
 #include <iostream>
 #include <queue>
-#include <algorithm>
+#include <tuple>
 #include <vector>
 
 using namespace std;
 
-int n, l, r;
-queue<pair<int,int>> q;
+int n, L, R;
+
+vector<pair<int, int>> egg;
+queue<pair<int, int>> q;
+
 int arr[51][51];
-int new_arr[51][51];
-bool visited[51][51] = { false, };
-vector<int> v[51][51];
+bool visited[51][51];
 
-void Total_Initial() {
-
+void Initial() {
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			new_arr[i][j] = 0;
-			v[i][j].clear();
-
 			visited[i][j] = false;
 		}
 	}
@@ -28,81 +25,83 @@ bool InRange(int x, int y) {
 	return 0 <= x && x < n && 0 <= y && y < n;
 }
 
-void Calc() {
-	int sum = 0;
-	int len = 0;
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (v[i][j].size()) {
-				sum += v[i][j].front();
-				len++;
-			}
-		}
-	}
+bool CanGo(int x, int y, int curr) {
+	if (!InRange(x, y)) return false;
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (v[i][j].size()) {
-				new_arr[i][j] = sum / len;
-			}
-		}
-	}
+	int diff = abs(arr[x][y] - curr);
 
-
-}
-
-bool Same() {
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (arr[i][j] != new_arr[i][j]) {
-				return false;
-			}
-		}
-	}
-
-	return true;
-}
-
-void Copy() {
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			arr[i][j] = new_arr[i][j];
-		}
-	}
+	return !visited[x][y] && L <= diff && diff <= R;
 }
 
 void BFS() {
-	int dx[] = { -1,1,0,0 };
-	int dy[] = { 0,0,-1,1 };
+	int dx[] = { -1,0,1,0 };
+	int dy[] = { 0,-1,0,1 };
 
 	while (!q.empty()) {
-		pair<int, int> p = q.front();
-		int x = p.first;
-		int y = p.second;
+		pair<int, int> curr = q.front();
+		int curr_x, curr_y;
+		tie(curr_x, curr_y) = curr;
 		q.pop();
 
 		for (int i = 0; i < 4; i++) {
-			int nx = x + dx[i];
-			int ny = y + dy[i];
+			int nx = curr_x + dx[i];
+			int ny = curr_y + dy[i];
 
-			if (InRange(nx, ny) && !visited[nx][ny]) {
-				if (l <= abs(arr[x][y] - arr[nx][ny]) && abs(arr[x][y] - arr[nx][ny]) <= r) {
-					visited[nx][ny] = true;
-					v[nx][ny].push_back(arr[nx][ny]);
-					q.push(make_pair(nx, ny));
+			if (CanGo(nx, ny, arr[curr_x][curr_y])) {
+				q.push(make_pair(nx, ny));
+				egg.push_back(make_pair(nx, ny));
+				//만약 가중치가 존재한다면 해당 값을 새로운 배열에 누적.
+				visited[nx][ny] = true;
+			}
+		}
+	}
+} 
+
+void Calc2() {
+	int sum = 0;
+	for (int i = 0; i < (int)egg.size(); i++) {
+		int x, y;
+		tie(x, y) = egg[i];
+		sum += arr[x][y];
+	}
+
+	for (int i = 0; i < (int)egg.size(); i++) {
+		int x, y;
+		tie(x, y) = egg[i];
+		arr[x][y] = sum / (int)egg.size();
+	}
+}
+
+bool Calc() {
+	Initial();
+	bool flag = false;
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (!visited[i][j]) {
+				egg.clear();
+
+				egg.push_back(make_pair(i, j));
+				q.push(make_pair(i, j));
+                visited[i][j] = true;
+
+				BFS();
+
+
+				if ((int)egg.size() > 1) {
+					flag = true;
 				}
-				else {
-					continue;
-				}
+
+				Calc2();
 			}
 		}
 	}
 
-	Calc();
+	return flag;
 }
 
 int main() {
-	cin >> n >> l >> r;
+	cin >> n >> L >> R;
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
@@ -110,33 +109,14 @@ int main() {
 		}
 	}
 
-	int ans = 0;
-
+	int cnt = 0;
 	while (1) {
-
-		Total_Initial();
-
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				if (!visited[i][j]) {
-					v[i][j].push_back(arr[i][j]);
-					q.push(make_pair(i, j));
-					visited[i][j] = true;
-					BFS();
-				}
-				v[i][j].clear();
-			}
+		bool flag = Calc();
+		if (!flag) {
+			break;
 		}
-
-		if (Same()) {
-			cout << ans;
-			return 0;
-		}
-		else {
-			Copy();
-			ans++;
-		}
+		cnt++;
 	}
 
-	cout << ans;
+	cout << cnt;
 }
