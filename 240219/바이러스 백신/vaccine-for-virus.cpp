@@ -54,7 +54,7 @@ bool InRange(int x, int y) {
 }
 
 
-int BFS() {
+bool BFS() {
 	//초기화.
 	Initial();
 
@@ -87,15 +87,29 @@ int BFS() {
 		}
 	}
 
-	//cout << "\n";
-	//for (int i = 0; i < n; i++) {
-	//	for (int j = 0; j < n; j++) {
-	//		cout << arr2[i][j] << " ";
-	//	}
-	//	cout << "\n";
-	//}
-	//cout << "\n\n";
+	/*cout << "\n";
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cout << arr2[i][j] << " ";
+		}
+		cout << "\n";
+	}
+	cout << "\n\n";*/
 
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (arr[i][j] == 0 && arr2[i][j] == 0) {
+				return false;
+			}
+		}
+	}
+
+	return true;
+
+
+}
+
+int Calc2() {
 	int cnt = 0;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
@@ -108,10 +122,11 @@ int BFS() {
 	return cnt;
 }
 
-
 void Calc(int curr_idx, int cnt) {
 	if (cnt == m) {
-		ans = min(ans, BFS());
+		if (BFS()) {
+			ans = min(ans, Calc2());
+		}
 		return;
 	}
 
@@ -141,13 +156,9 @@ int main() {
 	//idx, cnt;
 	Calc(0, 0);
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (arr2[i][j] == 0 && arr[i][j] == 0) {
-				cout << -1;
-				return 0;
-			}
-		}
+	if (ans == INT_MAX) {
+		cout << -1;
+		return 0;
 	}
 
 	cout << ans - 1;
