@@ -41,7 +41,7 @@ void Hospital() {
 void Enqueue() {
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			if (arr2[i][j] == 1 && arr[i][j] == 2) {
+			if (arr2[i][j] == 1) {
 				q.push(make_pair(i, j));
 				visited[i][j] = true;
 			}
@@ -60,6 +60,16 @@ bool BFS() {
 
 	//병원 설정.
 	Hospital();
+
+
+	/*cout << "\n";
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cout << arr2[i][j] << " ";
+		}
+		cout << "\n";
+	}
+	cout << "\n\n";*/
 
 	//q 설정.
 	Enqueue();
@@ -82,19 +92,19 @@ bool BFS() {
 			else if (InRange(nx, ny) && !visited[nx][ny] && (arr[nx][ny] == 2 && arr2[nx][ny] == 0)) {
 				q.push(make_pair(nx, ny));
 				visited[nx][ny] = true;
-				arr2[nx][ny] = arr2[x][y];
+				arr2[nx][ny] = arr2[x][y] + 1;
 			}
 		}
 	}
 
-	/*cout << "\n";
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			cout << arr2[i][j] << " ";
-		}
-		cout << "\n";
-	}
-	cout << "\n\n";*/
+	//cout << "\n";
+	//for (int i = 0; i < n; i++) {
+	//	for (int j = 0; j < n; j++) {
+	//		cout << arr2[i][j] << " ";
+	//	}
+	//	cout << "\n";
+	//}
+	//cout << "\n\n";
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
@@ -111,15 +121,28 @@ bool BFS() {
 
 int Calc2() {
 	int cnt = 0;
+	int cnt1 = 0;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			if (cnt < arr2[i][j]) {
 				cnt = arr2[i][j];
 			}
+			if (cnt1 < arr2[i][j] && arr[i][j] == 0) {
+				cnt1 = arr2[i][j];
+			}
 		}
 	}
 
-	return cnt;
+	int ans = 0;
+	if (cnt == 0 && cnt1 != 0) {
+		return cnt1;
+	}
+	else if (cnt != 0 && cnt1 == 0) {
+		return cnt;
+	}
+	ans = min(cnt, cnt1);
+	
+	return ans;
 }
 
 void Calc(int curr_idx, int cnt) {
