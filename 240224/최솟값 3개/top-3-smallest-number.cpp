@@ -8,25 +8,25 @@ int main() {
     int n;
     cin >> n;
 
-    vector<int> arr(n);
+    vector<long long> arr(n);
     for (int i = 0; i < n; ++i) {
         cin >> arr[i];
     }
 
-    priority_queue<int, vector<int>, greater<int>> q;
+    priority_queue<long long, vector<long long>, greater<long long>> q;
 
-    for (int i : arr) {
+    for (long long i : arr) {
         q.push(i);
         if (q.size() < 3) {
             cout << -1 << endl;
         } else {
-            int a = q.top();
+            long long a = q.top();
             q.pop();
-            int b = q.top();
+            long long b = q.top();
             q.pop();
-            int c = q.top();
+            long long c = q.top();
             q.pop();
-            cout << a * b * c << endl;
+            cout << (long long)(a * b * c) << endl;
             q.push(a);
             q.push(b);
             q.push(c);
