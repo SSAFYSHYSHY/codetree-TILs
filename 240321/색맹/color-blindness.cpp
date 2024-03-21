@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int n, cnt = 1, cnt1= 1, one = 0, two = 0;
+int n, cnt = 1, cnt1= 1, one = 0, two = 0, maxi = 0;
 char crr[101][101];
 char crr1[101][101];
 
@@ -17,6 +17,7 @@ int dy[] = { 0,0,-1,1 };
 
 void Initial() {
 	cnt = 1;
+	maxi = 0;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			visited[i][j] = false;
@@ -26,11 +27,11 @@ void Initial() {
 }
 
 int FindMax() {
-	int maxi = 0;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			arr[i][j] > maxi;
-			maxi = arr[i][j];
+			if (arr[i][j] > maxi) {
+				maxi = arr[i][j];
+			}
 		}
 	}
 
@@ -93,6 +94,15 @@ int main() {
 		}
 	}
 	one = FindMax();
+	//cout  << "\n\n" << one <<"\n\n";
+
+	//for (int i = 0; i < n; i++) {
+	//	for (int j = 0; j < n; j++) {
+	//		cout << arr[i][j] << " ";
+	//	}
+	//	cout << "\n";
+	//}
+	//cout << "\n";
 
 	Initial();
 
@@ -107,6 +117,14 @@ int main() {
 		}
 	}
 	two = FindMax();
+
+	//for (int i = 0; i < n; i++) {
+	//	for (int j = 0; j < n; j++) {
+	//		cout << arr[i][j] << " ";
+	//	}
+	//	cout << "\n";
+	//}
+	//cout << "\n";
 
 	cout << one << " " << two;
 }
