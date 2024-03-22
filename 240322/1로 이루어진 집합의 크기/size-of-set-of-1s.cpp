@@ -6,11 +6,11 @@
 using namespace std;
 
 int n, m, max_ans = 0, ans = 0, cnt = 1;
-int arr[201][201];
-int new_arr[201][201];
-int score[201][201];
+int arr[501][501];
+int new_arr[501][501];
+int score[501][501];
 
-bool visited[201][201] = { false, };
+bool visited[501][501] = { false, };
 queue<pair<int, int>> q;
 
 void Initial() {
