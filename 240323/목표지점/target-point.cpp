@@ -4,6 +4,8 @@
 #include <tuple>
 #include <queue>
 
+#include <time.h>
+
 using namespace std;
 
 int arr[501][501];
@@ -14,6 +16,7 @@ int n, m;
 
 int dx[] = { -1,1,0,0 };
 int dy[] = { 0,0,-1,1 };
+
 
 bool InRange(int x, int y) {
 	return 0 <= x && x < n && 0 <= y && y < m;
@@ -39,24 +42,6 @@ void BFS() {
 		}
 	}
 }
-
-void Calc() {
-	//BFS() 순회.
-	BFS();
-
-	//visited 방문하지 않으면서 1 인 경우.
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
-			if (visited[i][j] == false && arr[i][j] == 0) {
-				new_arr[i][j] = 0;
-			}
-			else if (visited[i][j] == false && arr[i][j] == 1) {
-				new_arr[i][j] = -1;
-			}
-		}
-	}
-}
-
 int main() {
 	cin >> n >> m;
 
@@ -72,13 +57,23 @@ int main() {
 		}
 	}
 
-	//BFS()
-	Calc();
-
+	BFS();
+	
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < m; j++) {
-			cout << new_arr[i][j] << " ";
+			if (!visited[i][j]) {
+				if (arr[i][j] == 0) {
+					cout << arr[i][j] << " ";
+				}
+				else {
+					cout << -1 << " ";
+				}
+			}
+			else {
+				cout << new_arr[i][j] << " ";
+			}
 		}
 		cout << "\n";
 	}
+	cout << "\n";
 }
