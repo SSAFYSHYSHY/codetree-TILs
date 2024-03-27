@@ -29,16 +29,23 @@ int tetris[5][3][4] = {
 	{1,0,0,0}},
 };
 
-bool InRange(int x, int y) {
-	return 0 <= x && x < n && 0 <= y && y < m;
-}
+//void Print() {
+//	cout << "\n";
+//	for (int i = 0; i < n; i++) {
+//		for (int j = 0; j < m; j++) {
+//			cout << new_arr[i][j] << " ";
+//		}
+//		cout << "\n";
+//	}
+//	cout << "\n";
+//}
 
 int Sum(int i, int j, int num) {
 	int sum = 0;
 
 	for (int x = i; x < i + 3; x++) {
 		for (int y = j; y < j + 4; y++) {
-			if (InRange(x, y) && tetris[num][x - i][y - j] == 1) {
+			if (tetris[num][x - i][y - j] == 1) {
 				sum += arr[x][y];
 			}
 		}
@@ -71,6 +78,8 @@ void Rotate(int n, int m) {
 		}
 	}
 
+	//Print();
+
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < m; j++) {
 			arr[i][j] = new_arr[i][j];
@@ -92,8 +101,14 @@ int main() {
 		Calc();
 		//cout << ans << " ";
 
+		int temp = n;
+		n = m;
+		m = temp;
+
 		//회전.
 		Rotate(n ,m);
+
+		//Print();
 	}
 
 	cout << ans;
