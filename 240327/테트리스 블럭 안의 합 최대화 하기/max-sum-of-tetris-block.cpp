@@ -7,7 +7,7 @@ int arr[201][201];
 int n, m, ans = 0;
 int new_arr[201][201];
 
-int tetris[5][3][4] = {
+int tetris[6][3][4] = {
 	{{1,1,1,1},
 	{0,0,0,0},
 	{0,0,0,0}},
@@ -24,21 +24,25 @@ int tetris[5][3][4] = {
 	{1,1,0,0},
 	{0,1,0,0}},
 
+	{{1,1,0,0},
+	{0,1,1,0},
+	{0,0,0,0}},
+
 	{{1,0,0,0},
 	{1,1,0,0},
 	{1,0,0,0}},
 };
 
-//void Print() {
-//	cout << "\n";
-//	for (int i = 0; i < n; i++) {
-//		for (int j = 0; j < m; j++) {
-//			cout << new_arr[i][j] << " ";
-//		}
-//		cout << "\n";
-//	}
-//	cout << "\n";
-//}
+void Print() {
+	cout << "\n";
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cout << new_arr[i][j] << " ";
+		}
+		cout << "\n";
+	}
+	cout << "\n";
+}
 
 int Sum(int i, int j, int num) {
 	int sum = 0;
@@ -55,7 +59,7 @@ int Sum(int i, int j, int num) {
 }
 
 void Calc() {
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 6; i++) {
 
 		for (int x = 0; x < n; x++) {
 			for (int y = 0; y < m; y++) {
