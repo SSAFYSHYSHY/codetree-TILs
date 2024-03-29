@@ -1,157 +1,110 @@
 #include <iostream>
-#include <algorithm>
-#include <string>
+#include <cmath>
+
+#define MAX_N 4
+#define MAX_M 8
+#define ROTATE_CW 1
+#define ROTATE_CCW -1
+#define NOT_ROTATE 0
 
 using namespace std;
 
-int arr[4][8];
-bool flag[5] = {false,};
-int dir_arr[4] = {0,};
-int k;
-int num, dir;
+// 전역 변수 선언:
+int n = 4, m = 8, k;
 
-int check[4][2] = {
-	{2,8},
-	{2,6},
-	{2,6},
-	{8,6}
-};
+char a[MAX_N + 1][MAX_M + 1];
 
-void Initial() {
-	for (int i = 0; i < 5; i++) {
-		flag[i] = false;
-	}
+// 의자별로 회전해야 할 방향을 저장합니다.
+int rotate_dir[MAX_N + 1];
+
+// 의자를 해당 방향으로 밀어줍니다.
+void Shift(int curr_num, int curr_dir) {
+    // 시계방향으로 회전해야 하는 경우
+    if(curr_dir == ROTATE_CW) {
+        int temp = a[curr_num][m];
+        for(int i = m; i >= 2; i--)
+            a[curr_num][i] = a[curr_num][i - 1];
+        a[curr_num][1] = temp;
+    }
+    // 반시계방향으로 회전해야 하는경우
+    else {
+        int temp = a[curr_num][1];
+        for(int i = 1; i <= m - 1; i++)
+            a[curr_num][i] = a[curr_num][i + 1];
+        a[curr_num][m] = temp;
+    }
 }
 
-void Check(int num, int num2, int swi) {
-	if (flag[num] == false) {
-		return;
-	}
-
-	int a = check[num][0];
-	int a1 = check[num][1];
-
-	int b = check[num2][0];
-	int b1 = check[num2][1];
-
-	if (swi == 0) {
-		if (arr[num][a1] == arr[num2][b]) {
-			flag[num2] = false;
-		}
-		else {
-			flag[num2] = true;
-		}
-	}
-	else {
-		if (arr[num][a] == arr[num2][b1]) {
-			flag[num2] = false;
-		}
-		else {
-			flag[num2] = true;
-		}
-	}
+// 주어진 방향으로부터 반대 방향의 값을 반환합니다.
+int Flip(int curr_dir) {
+    return (curr_dir == ROTATE_CW) ? ROTATE_CCW : ROTATE_CW;
 }
 
-void Rotate(int num, int dir) {
-	if (dir == -1) {
-		int temp = arr[num][0];
-
-		for (int i = 0; i < 8; i++) {
-			arr[num][i] = arr[num][i + 1];
-		}
-
-		arr[num][7] = temp;
-	}
-	else {
-		int temp = arr[num][7];
-
-		for (int i = 7; i >= 0; i--) {
-			arr[num][i] = arr[num][i - 1];
-		}
-
-		arr[num][0] = temp;
-	}
-}
-
-void Calc2(int num, int dir) {
-	Rotate(num, dir);
-
-	for (int i = num - 1; i >= 0; i--) {
-		if (flag[i] == true && dir == -1) {
-			Rotate(i, 1);
-		}
-		else if(flag[i] == true && dir == 1) {
-			Rotate(i, -1);
-		}
-	}
-
-	for (int i = num + 1; i < 4; i++) {
-		if (flag[i] && dir == -1) {
-			Rotate(i, 1);
-		}
-		else if (flag[i] && dir == 1) {
-			Rotate(i, -1);
-		}
-	}
-}
-
-void Calc(int num, int dir) {
-	//Initial();
-	Initial();
-	flag[num] = true;
-
-	//Check();
-	for (int i = num - 1; i >= 0; i--) {
-		Check(i + 1, i, 0);
-	}
-
-	for (int i = num + 1; i < 4; i++) {
-		Check(i - 1, i, 1);
-	}
-
-	//Calc();
-	Calc2(num, dir);
-
-}
-
-void Print() {
-	cout << "\n";
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 8; j++) {
-			cout << arr[i][j] << " ";
-		}
-		cout << "\n";
-	}
-	cout << "\n";
-}
-
-int Sum() {
-	//cout << arr[0][0] << " " << arr[1][0] << " " << arr[2][0] << " " << arr[3][0] << "\n";
-
-	return (1 * arr[0][0]) + (2 * arr[1][0]) + (4 * arr[2][0]) + (8 * arr[3][0]);
+// 조건에 맞춰 움직여봅니다.
+void Simulate(int start_num, int start_dir) {
+    // Step1
+    // 회전하게 되는 의자가 도는 방향이 동시에 결정되므로
+    // 먼저 각 의자마다 회전하게 될 방향을 구합니다. 
+    
+    // 초기값은 전부 회전하지 않음으로 표시합니다.
+    for(int i = 1; i <= n; i++)
+        rotate_dir[i] = NOT_ROTATE;
+    
+    // 시작 위치는 반드시 회전해야 합니다.
+    rotate_dir[start_num] = start_dir;
+    
+    // 좌측에 있는 의자들의 회전 방향을 정합니다.
+    // 마주보는 두 사람의 지역이 다를때만 반복하며,
+    // 그렇지 않은 경우에는 종료합니다.
+    // 방향을 계속 뒤집어줘야 함에 유의합니다.
+    for(int i = start_num - 1; i >= 1; i--) {
+        if(a[i][3] != a[i + 1][7])
+            rotate_dir[i] = Flip(rotate_dir[i + 1]);
+        else
+            break;
+    }
+    
+    // 우측에 있는 의자들의 회전 방향을 정합니다.
+    // 마주보는 두 사람의 지역이 다를때만 반복하며,
+    // 그렇지 않은 경우에는 종료합니다.
+    // 방향을 계속 뒤집어줘야 함에 유의합니다.
+    for(int i = start_num + 1; i <= n; i++) {
+        if(a[i][7] != a[i - 1][3])
+            rotate_dir[i] = Flip(rotate_dir[i - 1]);
+        else
+            break;
+    }
+    
+    // Step2
+    // step 1에 의해 회전이 결정된 의자들을 회전시켜줍니다.
+    for(int i = 1; i <= n; i++)
+        if(rotate_dir[i] != NOT_ROTATE)
+            Shift(i, rotate_dir[i]);
 }
 
 int main() {
-	for (int i = 0; i < 4; i++) {
-		string s;
-		cin >> s;
+    // 입력:
+    for(int i = 1; i <= n; i++)
+        for(int j = 1; j <= m; j++)
+            cin >> a[i][j];
+    cin >> k;
+    
+    while(k--) {
+        int start_num, start_dir;
+        cin >> start_num >> start_dir;
 
-		for (int j = 0; j < s.length(); j++) {
-			arr[i][j] = int(s[j] - '0');
-		}
-	}
+        // 조건에 맞춰 돌려봅니다.
+        Simulate(start_num, start_dir);
+    }
 
-	cin >> k;
-
-	while (k--) {
-		cin >> num >> dir;
-		num -= 1;
-
-		Calc(num, dir);
-
-		//Print();
-	}
-
-	int ans = Sum();
-	cout << ans;
+    int ans = 0;
+    
+    for(int i = 1; i <= n; i++)
+        if(a[i][1] == '1')
+            ans += pow(2, i - 1);
+    
+    // 출력:
+    cout << ans;
+    
+    return 0;
 }
