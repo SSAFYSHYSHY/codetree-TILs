@@ -8,9 +8,9 @@ using namespace std;
 typedef tuple<int, int, int, int> Cell;
 
 int n;
-int arr[201][201];
-int tar[201];
-bool visited[201][201];
+int arr[401][401];
+int tar[401];
+bool visited[401][401];
 
 int dx[] = { -1,1,0,0 };
 int dy[] = { 0,0,-1,1 };
