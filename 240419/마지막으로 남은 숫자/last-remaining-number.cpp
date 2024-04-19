@@ -17,14 +17,7 @@ int main(){
 		q.push(num);
 	}
 
-	while (1) {
-		if (q.size() == 0) {
-			cout << "-1\n";
-			return 0;
-		}
-		else if (q.size() == 1) {
-			break;
-		}
+	while (q.size() >= 2) {
 
 		int x, x1;
 		x = q.top();
@@ -33,8 +26,15 @@ int main(){
 		x1 = q.top();
 		q.pop();
 
-		q.push(abs(x - x1));
+        if(abs(x - x1) != 0) {
+		    q.push(abs(x - x1));
+        }
 	}
 
-	cout << q.top() << "\n";
+    if(q.size() == 1) {
+        cout << q.top();
+    }
+    else {
+        cout << -1;
+    }
 }
