@@ -26,7 +26,7 @@ bool InRange(int x, int y) {
 }
 
 int BFS() {
-	int cnt = 1;
+	int cnt = 0;
 
 	while (!q.empty()) {
 		int x = q.front().first;
@@ -53,17 +53,7 @@ void Calc() {
 	Initial();
 
 	//1인 것들을 BFS
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
-			if (arr[i][j] == 1 && !visited[i][j]) {
-				visited[i][j] = true;
-				q.push(make_pair(i, j));
-
-				ans = max(ans, BFS());
-			}
-		}
-	}
-
+	ans = max(ans, BFS());
 }
 
 int main() {
@@ -83,6 +73,9 @@ int main() {
 			if (arr[i][j] == 0 && !flag) {
 				arr[i][j] = 1;
 				flag = true;
+
+				q.push(make_pair(i, j));
+				visited[i][j] = true;
 			}
 
 			//BFS();
