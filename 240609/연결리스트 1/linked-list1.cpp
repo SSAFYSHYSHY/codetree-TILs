@@ -79,13 +79,13 @@ int main() {
 		}
 
 		if (nullptr == node->prev && nullptr != node->next) {
-			cout << "(NULL) " << node->data << " " << node->next->data << "\n";
+			cout << "(Null) " << node->data << " " << node->next->data << "\n";
 		}
 		else if (nullptr != node->prev && nullptr == node->next) {
-			cout << node->prev->data << " " << node->data << " (NULL)\n";
+			cout << node->prev->data << " " << node->data << " (Null)\n";
 		}
 		else if (nullptr == node->prev && nullptr == node->next) {
-			cout << "(NULL) " << node->data << " (NULL)\n";
+			cout << "(Null) " << node->data << " (Null)\n";
 		}
 
 		else {
