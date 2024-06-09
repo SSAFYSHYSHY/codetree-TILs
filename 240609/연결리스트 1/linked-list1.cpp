@@ -44,7 +44,7 @@ void Pop_front(Node*& u) {
 
 void Pop_back(Node*& u) {
 	if (nullptr != u->next) {
-		u->next = u;
+		u = u->next;
 	}
 }
 
@@ -79,13 +79,13 @@ int main() {
 		}
 
 		if (nullptr == node->prev && nullptr != node->next) {
-			cout << "(Null) " << node->data << " " << node->next->data << "\n";
+			cout << "(NULL) " << node->data << " " << node->next->data << "\n";
 		}
 		else if (nullptr != node->prev && nullptr == node->next) {
-			cout << node->prev->data << " " << node->data << " (Null)\n";
+			cout << node->prev->data << " " << node->data << " (NULL)\n";
 		}
 		else if (nullptr == node->prev && nullptr == node->next) {
-			cout << "(Null) " << node->data << " (Null)\n";
+			cout << "(NULL) " << node->data << " (NULL)\n";
 		}
 
 		else {
