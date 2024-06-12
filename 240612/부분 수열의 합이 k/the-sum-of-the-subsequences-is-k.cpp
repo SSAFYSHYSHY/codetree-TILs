@@ -22,7 +22,7 @@ int main() {
 		prefix[i] = prefix[i - 1] + arr[i];
 	}
 
-	for (int i = 2; i < n; i++) {
+	for (int i = 1; i <= n; i++) {
 		for (int j = 0; j < n - i + 1; j++) {
 			ans = Get(j, j + i - 1);
 
