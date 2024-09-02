@@ -97,5 +97,11 @@ int main() {
 		ans++;
 	}
 
-	cout << ans - 1;
+	ans -= 1;
+	if(ans <= 0){
+		cout << 0;
+	}
+	else {
+		cout << ans;
+	}
 }
