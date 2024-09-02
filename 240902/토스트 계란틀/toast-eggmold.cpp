@@ -4,108 +4,94 @@
 
 using namespace std;
 
-int n, l, r, ans= 0;
+int n, l, r, days = 0;
 int arr[51][51];
-int new_arr[51][51];
-bool visited[51][51] = { false, };
+bool visited[51][51];
 
-int dx[] = { -1,1,0,0 };
-int dy[] = { 0,0,-1,1 };
-
-bool Flag() {
-	
-	int ansi = 0;
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (new_arr[i][j] > ansi) {
-				ansi = new_arr[i][j];
-			}
-		}
-	}
-
-	if (ansi == (n * n) - 1) {
-		return false;
-	}
-
-	return true;
-}
+int dx[] = {-1, 1, 0, 0};
+int dy[] = {0, 0, -1, 1};
 
 bool InRange(int x, int y) {
-	return 0 <= x && x < n && 0 <= y && y < n;
+    return 0 <= x && x < n && 0 <= y && y < n;
 }
 
-void BFS(int x, int y, int num) {
-	queue<pair<int, int>> q;
-	q.push(make_pair(x, y));
-	visited[x][y] = true;
-	new_arr[x][y] = num;
-	int sum = arr[x][y];
-	int cnt = 1;
+bool BFS(int x, int y) {
+    queue<pair<int, int>> q;
+    vector<pair<int, int>> unionCells;
+    q.push({x, y});
+    visited[x][y] = true;
+    unionCells.push_back({x, y});
 
-	while (!q.empty()) {
-		int cx = q.front().first;
-		int cy = q.front().second;
-		q.pop();
+    int sum = arr[x][y];
+    int count = 1;
+    bool isUnionFormed = false;
 
-		for (int i = 0; i < 4; i++) {
-			int nx = cx + dx[i];
-			int ny = cy + dy[i];
+    while (!q.empty()) {
+        int cx = q.front().first;
+        int cy = q.front().second;
+        q.pop();
 
-			if (InRange(nx, ny) && !visited[nx][ny] && (l <= abs(arr[cx][cy] - arr[nx][ny]) && abs(arr[cx][cy] - arr[nx][ny]) <= r)) {
-				q.push(make_pair(nx, ny));
-				sum += arr[nx][ny];
-				visited[nx][ny] = true;
-				new_arr[nx][ny] = num;
-				cnt++;
-			}
-		}
-	}
+        for (int i = 0; i < 4; i++) {
+            int nx = cx + dx[i];
+            int ny = cy + dy[i];
 
-	int avg = sum / cnt;
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (new_arr[i][j] == num) {
-				arr[i][j] = avg;
-			}
-		}
-	}
+            if (InRange(nx, ny) && !visited[nx][ny]) {
+                int populationDiff = abs(arr[cx][cy] - arr[nx][ny]);
+                if (l <= populationDiff && populationDiff <= r) {
+                    q.push({nx, ny});
+                    visited[nx][ny] = true;
+                    unionCells.push_back({nx, ny});
+                    sum += arr[nx][ny];
+                    count++;
+                    isUnionFormed = true;
+                }
+            }
+        }
+    }
+
+    if (isUnionFormed) {
+        int avg = sum / count;
+        for (auto &cell : unionCells) {
+            arr[cell.first][cell.second] = avg;
+        }
+    }
+
+    return isUnionFormed;
+}
+
+bool Simulate() {
+    memset(visited, false, sizeof(visited));
+    bool moved = false;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (!visited[i][j]) {
+                if (BFS(i, j)) {
+                    moved = true;
+                }
+            }
+        }
+    }
+
+    return moved;
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(0);
-	cout.tie(0);
+    ios::sync_with_stdio(false);
+    cin.tie(0);
 
-	cin >> n >> l >> r;
+    cin >> n >> l >> r;
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			cin >> arr[i][j];
-		}
-	}
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> arr[i][j];
+        }
+    }
 
-	while (Flag()) {
-		memset(visited, false, sizeof(visited));
-		memset(new_arr, -1, sizeof(new_arr));
+    while (Simulate()) {
+        days++;
+    }
 
-		int num = 0;
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				if (!visited[i][j]) {
-					BFS(i, j, num);
-					num++;
-				}
-			}
-		}
-
-		ans++;
-	}
-
-	ans -= 1;
-	if(ans <= 0){
-		cout << 0;
-	}
-	else {
-		cout << ans;
-	}
+    cout << days << "\n";
+    return 0;
 }
