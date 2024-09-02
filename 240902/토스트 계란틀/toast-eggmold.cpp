@@ -72,6 +72,10 @@ void BFS(int x, int y, int num) {
 }
 
 int main() {
+	ios::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+
 	cin >> n >> l >> r;
 
 	for (int i = 0; i < n; i++) {
