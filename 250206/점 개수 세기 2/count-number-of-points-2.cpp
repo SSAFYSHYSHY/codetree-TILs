@@ -1,106 +1,91 @@
 #include <iostream>
-#include <vector>
-#include <map>
 #include <set>
+#include <unordered_map>
+#include <vector>
+
+#define MAX_N 100000
 
 using namespace std;
 
+// 변수 선언
 int n, q;
-vector<pair<int, int>> points;
-vector<tuple<int, int, int, int>> queries;
+pair<int, int> points[MAX_N];
+tuple<int, int, int, int> queries[MAX_N];
 
-// 좌표 압축 매핑
-map<int, int> x_mapper, y_mapper;
-vector<vector<int>> BIT;  // Fenwick Tree (BIT)
+set<int> x_vals, y_vals;
+unordered_map<int, int> x_mapper, y_mapper;
 
-// 좌표 압축 수행
+// 2D 누적 합 배열
+vector<vector<int>> prefix_sum;
+
 void compress_coordinates() {
-    set<int> x_set, y_set;
-
-    // 모든 x, y 좌표를 set에 저장 (중복 제거 + 정렬)
-    for (auto& [x, y] : points) {
-        x_set.insert(x);
-        y_set.insert(y);
+    for (int i = 0; i < n; i++) {
+        x_vals.insert(points[i].first);
+        y_vals.insert(points[i].second);
     }
-    for (auto& [sx, sy, ex, ey] : queries) {
-        x_set.insert(sx);
-        x_set.insert(ex);
-        y_set.insert(sy);
-        y_set.insert(ey);
+    for (int i = 0; i < q; i++) {
+        auto [sx, sy, ex, ey] = queries[i];
+        x_vals.insert(sx);
+        x_vals.insert(ex);
+        y_vals.insert(sy);
+        y_vals.insert(ey);
     }
 
-    // 압축된 좌표 부여
-    int idx = 1;
-    for (int x : x_set) x_mapper[x] = idx++;
-    int max_x = idx;  // 압축된 X 좌표 최대 크기
+    int x_idx = 1, y_idx = 1;
+    for (int x : x_vals) x_mapper[x] = x_idx++;
+    for (int y : y_vals) y_mapper[y] = y_idx++;
 
-    idx = 1;
-    for (int y : y_set) y_mapper[y] = idx++;
-    int max_y = idx;  // 압축된 Y 좌표 최대 크기
+    prefix_sum.assign(x_idx, vector<int>(y_idx, 0));
 
-    // Fenwick Tree 크기 조정 (압축된 크기만큼만 할당)
-    BIT.assign(max_x + 1, vector<int>(max_y + 1, 0));
-}
+    for (int i = 0; i < n; i++) {
+        int x = x_mapper[points[i].first];
+        int y = y_mapper[points[i].second];
+        prefix_sum[x][y]++;
+    }
 
-// Fenwick Tree (BIT) 업데이트
-void update(int x, int y, int delta) {
-    for (int i = x; i < BIT.size(); i += (i & -i)) {
-        for (int j = y; j < BIT[0].size(); j += (j & -j)) {
-            BIT[i][j] += delta;
+    for (int i = 1; i < x_idx; i++) {
+        for (int j = 1; j < y_idx; j++) {
+            prefix_sum[i][j] += prefix_sum[i - 1][j] + prefix_sum[i][j - 1] - prefix_sum[i - 1][j - 1];
         }
     }
 }
 
-// Fenwick Tree (BIT)에서 (1,1) ~ (x,y)까지의 합 계산
-int queryBIT(int x, int y) {
-    int sum = 0;
-    for (int i = x; i > 0; i -= (i & -i)) {
-        for (int j = y; j > 0; j -= (j & -j)) {
-            sum += BIT[i][j];
-        }
-    }
-    return sum;
-}
-
-// (sx, sy) ~ (ex, ey) 범위의 점 개수 구하기
+// 특정 구간 [sx, sy] ~ [ex, ey] 내의 점 개수 계산
 int get_range_sum(int sx, int sy, int ex, int ey) {
-    return queryBIT(ex, ey) - queryBIT(sx - 1, ey) - queryBIT(ex, sy - 1) + queryBIT(sx - 1, sy - 1);
+    return prefix_sum[ex][ey]
+        - (sx > 1 ? prefix_sum[sx - 1][ey] : 0)
+        - (sy > 1 ? prefix_sum[ex][sy - 1] : 0)
+        + (sx > 1 && sy > 1 ? prefix_sum[sx - 1][sy - 1] : 0);
 }
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
+    // 입력 받기
     cin >> n >> q;
-    points.resize(n);
-    queries.resize(q);
-
     for (int i = 0; i < n; i++) {
         cin >> points[i].first >> points[i].second;
     }
-
     for (int i = 0; i < q; i++) {
         int sx, sy, ex, ey;
         cin >> sx >> sy >> ex >> ey;
-        queries[i] = {sx, sy, ex, ey};
+        queries[i] = { sx, sy, ex, ey };
     }
 
-    // 좌표 압축 수행
+    // 좌표 압축 & 2D 누적 합 준비
     compress_coordinates();
 
-    // Fenwick Tree에 점 추가
-    for (auto& [x, y] : points) {
-        update(x_mapper[x], y_mapper[y], 1);
-    }
-
     // 질의 처리
-    for (auto& [sx, sy, ex, ey] : queries) {
-        int sx_mapped = x_mapper[sx];
-        int sy_mapped = y_mapper[sy];
-        int ex_mapped = x_mapper[ex];
-        int ey_mapped = y_mapper[ey];
+    for (int i = 0; i < q; i++) {
+        auto [sx, sy, ex, ey] = queries[i];
 
-        cout << get_range_sum(sx_mapped, sy_mapped, ex_mapped, ey_mapped) << "\n";
+        int new_sx = x_mapper[sx];
+        int new_sy = y_mapper[sy];
+        int new_ex = x_mapper[ex];
+        int new_ey = y_mapper[ey];
+
+        cout << get_range_sum(new_sx, new_sy, new_ex, new_ey) << "\n";
     }
 
     return 0;
