@@ -1,8 +1,7 @@
 #include <iostream>
-#include <set>
-#include <map>
 #include <vector>
-#include <unordered_map>
+#include <map>
+#include <set>
 
 using namespace std;
 
@@ -12,7 +11,7 @@ vector<tuple<int, int, int, int>> queries;
 
 // 좌표 압축 매핑
 map<int, int> x_mapper, y_mapper;
-unordered_map<int, unordered_map<int, int>> BIT; // Fenwick Tree를 희소 배열로 구현
+vector<vector<int>> BIT;  // Fenwick Tree (BIT)
 
 // 좌표 압축 수행
 void compress_coordinates() {
@@ -33,14 +32,20 @@ void compress_coordinates() {
     // 압축된 좌표 부여
     int idx = 1;
     for (int x : x_set) x_mapper[x] = idx++;
+    int max_x = idx;  // 압축된 X 좌표 최대 크기
+
     idx = 1;
     for (int y : y_set) y_mapper[y] = idx++;
+    int max_y = idx;  // 압축된 Y 좌표 최대 크기
+
+    // Fenwick Tree 크기 조정 (압축된 크기만큼만 할당)
+    BIT.assign(max_x + 1, vector<int>(max_y + 1, 0));
 }
 
 // Fenwick Tree (BIT) 업데이트
 void update(int x, int y, int delta) {
-    for (int i = x; i < 300001; i += (i & -i)) {
-        for (int j = y; j < 300001; j += (j & -j)) {
+    for (int i = x; i < BIT.size(); i += (i & -i)) {
+        for (int j = y; j < BIT[0].size(); j += (j & -j)) {
             BIT[i][j] += delta;
         }
     }
@@ -77,7 +82,7 @@ int main() {
     for (int i = 0; i < q; i++) {
         int sx, sy, ex, ey;
         cin >> sx >> sy >> ex >> ey;
-        queries[i] = { sx, sy, ex, ey };
+        queries[i] = {sx, sy, ex, ey};
     }
 
     // 좌표 압축 수행
