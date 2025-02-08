@@ -3,12 +3,12 @@
 
 using namespace std;
 
-int n;
+long long n;
 string s;
 
-int L[100001];
-int R[100001];
-int ans = 0;
+long long L[100001];
+long long R[100001];
+long long ans = 0;
 
 void Input() {
 	cin >> n >> s;
@@ -31,14 +31,14 @@ void Input() {
 int main() {
 	Input();
 
-	for (int i = 1; i < n; i++) {
+	for (long long i = 1; i < n; i++) {
 		L[i] = L[i - 1];
 		if (s[i] == 'C') {
 			L[i] += 1;
 		}
 	}
 
-	for (int i = n - 2; i >= 0; i--) {
+	for (long long i = n - 2; i >= 0; i--) {
 		R[i] = R[i + 1];
 		if(s[i] == 'W') {
 			R[i] += 1;
