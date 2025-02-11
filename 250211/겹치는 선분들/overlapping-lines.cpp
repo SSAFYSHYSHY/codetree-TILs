@@ -13,47 +13,48 @@ vector<pair<int, int>> events;
 int main() {
     cin >> n >> m;
 
-    int x1 = 0, x2 = 0;
+    int x = 0;
     for (int i = 0; i < n; i++) {
         char ord;
         int len;
         cin >> len >> ord;
 
         if (ord == 'R') {
-            x2 = x1 + len;
+            segs.push_back({ x, x + len });
+            x += len;
         }
         else if (ord == 'L') {
-            x2 = x1 - len;
+            segs.push_back({ x - len, x });
+            x -= len;
         }
-
-        segs.push_back({ x1, x2 });
-        x1 = x2;
     }
 
     // 이벤트 추가
-    for (auto& seg : segs) {
-        int a = seg.first, b = seg.second;
-        if (a > b) swap(a, b);  // 순서 보정
+    for (int i = 0; i < n; i++) {
+        int x1, x2;
+        tie(x1, x2) = segs[i];
 
-        events.push_back({ a, +1 });
-        events.push_back({ b, -1 });
+        events.push_back({ x1, +1 });
+        events.push_back({ x2,-1 });
     }
 
     // 정렬
     sort(events.begin(), events.end());
 
     // 겹치는 길이 계산
-    int sum = 0, prevX = events[0].first, result = 0;
-    for (auto& e : events) {
-        int x = e.first, v = e.second;
+    int sum = 0, ans = 0;
+    for (int i = 0; i < 2 * n; i++) {
+        int x, v;
+        tie(x, v) = events[i];
 
-        if (sum == m) {
-            result += (x - prevX);  // 구간 길이 누적
+        if (sum >= m) {
+            int prev_x;
+            tie(prev_x, ignore) = events[i - 1];
+            ans += x - prev_x;
         }
 
         sum += v;
-        prevX = x;
     }
 
-    cout << result + 1<< '\n';
+    cout << ans;
 }
