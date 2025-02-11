@@ -1,44 +1,42 @@
 #include <iostream>
 #include <vector>
+#include <map>
 #include <algorithm>
-#include <tuple>
 
 using namespace std;
 
-int n;
-int visited[200001];
-pair<int, int> arr[100001];
+long long n, maxi = 0, mini = LLONG_MAX;
+map<long long, long long> visited; // 배열 대신 map 사용
+pair<long long, long long> arr[100001];
 
 void Input() {
-	cin >> n;
+    cin >> n;
+    for (long long i = 0; i < n; i++) {
+        long long x, y;
+        cin >> x >> y;
 
-	for (int i = 0; i < n; i++) {
-		int x, y;
-		cin >> x >> y;
-
-		arr[i].first = x;
-		arr[i].second = y;
-	}
+        arr[i] = { x, y };
+    }
 }
 
-int main(){
-	Input();
+int main() {
+    Input();
 
-	//각 n만큼 순회해서 +1,-1의 값을 누적.
-	for (int i = 0; i < n; i++) {
-		int x, y;
-		tie(x, y) = arr[i];
+    for (long long i = 0; i < n; i++) {
+        long long x = arr[i].first, y = arr[i].second;
 
-		visited[x] += 1;
-		visited[y] -= 1;
-	}
+        maxi = max(maxi, y);
+        mini = min(mini, x);
 
-	int sum = 0, ans = 0;
-	for (int i = 1; i < 200001; i++) {
-		sum += visited[i];
+        visited[x] += 1;
+        visited[y] -= 1;
+    }
 
-		ans = max(ans, sum);
-	}
+    long long sum = 0, ans = 0;
+    for (auto it = visited.begin(); it != visited.end(); ++it) {
+        sum += it->second;
+        ans = max(ans, sum);
+    }
 
-	cout << ans;
+    cout << ans;
 }
