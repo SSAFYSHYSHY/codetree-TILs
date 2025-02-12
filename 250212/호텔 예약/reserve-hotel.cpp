@@ -24,7 +24,7 @@ int main() {
 		tie(x1, x2) = seg[i];
 
 		points.push_back({ x1, +1 });
-		points.push_back({ x2, -1 });
+		points.push_back({ x2 + 1, -1 });
 	}
 
 	sort(points.begin(), points.end());
