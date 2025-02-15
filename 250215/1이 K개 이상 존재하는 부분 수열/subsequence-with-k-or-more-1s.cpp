@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int arr[100001]; // 수열 저장
+int arr[1000002]; // 수열 저장
 int n, k;
 
 void Input() {
