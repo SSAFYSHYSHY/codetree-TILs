@@ -30,7 +30,7 @@ int main() {
     }
 
     L[0] = 0;
-    R[m + 1] = n;
+    R[m + 1] = n + 1;
     
     int ans = 0;
     for(int j = 1; j <= m; j++)
