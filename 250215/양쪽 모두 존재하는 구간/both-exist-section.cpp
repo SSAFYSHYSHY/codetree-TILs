@@ -23,6 +23,7 @@ void Push(int idx) {
         distinct_num_in++;
     count_array_in[num]++;
 
+    count_array_out[num]--;
     if(count_array_out[num] == 0)
         distinct_num_out--;
 }
