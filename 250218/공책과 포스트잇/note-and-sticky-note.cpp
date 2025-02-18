@@ -30,7 +30,7 @@ int main() {
 	long long ans = 0;
 
 	while (le <= re) {
-		int mid = (le + re) / 2;
+		long long mid = (le + re) / 2;
 
 		if (Calc(mid)) {
 			le = mid + 1;
