@@ -5,7 +5,7 @@ using namespace std;
 
 long long n, m, c;
 long long arr[100001];
-long long l = 0, r = 1e9, ans = 0;
+long long l = 0, r = 1e9, ans = 1e9;
 
 void Input() {
 	cin >> n >> m >> c;
@@ -19,22 +19,18 @@ void Input() {
 
 bool Calc(long long mid) {
 	long long bus_cnt = 1;
-	long long last_person = arr[0];
+	long long first_person = arr[0];
+	long long first_idx = 0;
 
 	for (long long i = 1; i < n; i++) {
-		if (arr[i] - last_person <= mid && bus_cnt < c) {
-			continue;
-		}
-
-		else {
+		if (arr[i] - first_person > mid || i + 1 - first_idx > c) {
 			bus_cnt++;
-			last_person -= arr[i];
+			first_idx = i;
+			first_person = arr[i];
 		}
-
-		if (bus_cnt > m) return false;
 	}
 
-	return true;
+	return (bus_cnt <= m);
 }
 
 int main() {
@@ -45,12 +41,12 @@ int main() {
 
 		if (Calc(mid)) {
 			r = mid - 1;
-			ans = mid;
+			ans = min(ans, mid);
 		}
 		else {
 			l = mid + 1;
 		}
 	}
 
-	cout << ans + 1;
+	cout << ans;
 }
