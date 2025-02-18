@@ -1,88 +1,87 @@
 #include <iostream>
-#include <queue>
-#include <climits>
 #include <algorithm>
+#include <queue>
+
+#define MAX_N 100
+#define MAX_H 500
 
 using namespace std;
 
-int n, m;
-int a[100][100];  // 수치 맵
-bool visited[100][100];
-int dirs[4][2] = { {-1, 0}, {0, 1}, {1, 0}, {0, -1} };  // 상, 우, 하, 좌 방향
+const int dy[4] = {-1, 0, 1, 0};
+const int dx[4] = {0, -1, 0, 1};
 
-// 범위 벗어나는지 체크
-bool out_range(int y, int x) {
-    return y < 0 || y >= n || x < 0 || x >= m;
+// 변수 선언
+int n, m;
+int board[MAX_N][MAX_N];
+bool visited[MAX_N][MAX_N];
+
+// bfs를 이용해 이동합니다. visited 배열로 끝까지 도달할 수 있는지 확인합니다.
+void bfs(int x, int y, int lo, int hi) {
+    queue<pair<int, int>> q;
+    q.push({x, y});
+    visited[x][y] = true;
+
+    while (!q.empty()) {
+        auto [x, y] = q.front();
+        q.pop();
+        for (int dir = 0; dir < 4; dir++) {
+            int nx = x + dx[dir];
+            int ny = y + dy[dir];
+            if (nx >= 0 && nx < n && ny >= 0 && ny < m && board[nx][ny] >= lo && board[nx][ny] <= hi && visited[nx][ny] == false) {
+                q.push({nx, ny});
+                visited[nx][ny] = true;
+            }
+        }
+    }
 }
 
-// BFS 함수
-bool canReach(int k) {
-    queue<pair<int, int>> q;
-    q.push({ 0, 0 });  // 시작점 (0, 0)
-    visited[0][0] = true;
+// visited 배열을 초기화합니다.
+void clear_visited() {
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < m; j++) visited[i][j] = false;
+}
 
-    // BFS 탐색
-    while (!q.empty()) {
-        int y = q.front().first;
-        int x = q.front().second;
-        q.pop();
+// d 이하로 최대 높이와 최소 높이의 차이가 나는 칸만 갈 수 있을 때,
+// 마지막 칸으로 이동할 수 있는지 확인합니다.
+bool reachable(int d) {
+    // 모든 높이 제한에 대해서, 도달 가능한지 확인합니다.
+    for(int lo = 1; lo <= MAX_H; lo++) {
+        clear_visited();
 
-        // 목적지에 도달했으면 true 반환
-        if (y == n - 1 && x == m - 1) {
-            return true;
-        }
-
-        // 4방향 탐색
-        for (int i = 0; i < 4; ++i) {
-            int ny = y + dirs[i][0];
-            int nx = x + dirs[i][1];
-
-            // 범위 벗어나면 skip
-            if (out_range(ny, nx) || visited[ny][nx]) continue;
-
-            // 경로를 이동하는 조건 체크
-            int mi = min(a[y][x], a[ny][nx]);
-            int ma = max(a[y][x], a[ny][nx]);
-
-            // 조건을 만족하는지 확인 (k를 기준으로)
-            if (ma - mi > k) continue;
-
-            visited[ny][nx] = true;
-            q.push({ ny, nx });
-        }
+        int hi = lo + d;
+        // 만약 시작하는 위치의 높이가 lo이상 hi이하라면 dfs로 탐색합니다.
+        if(board[0][0] >= lo && board[0][0] <= hi)
+            bfs(0, 0, lo, hi);
+        // 마지막에 도달할 수 있으면 도달 가능합니다.
+        if(visited[n - 1][m - 1]) return true;
     }
 
     return false;
 }
 
 int main() {
+    // 입력
     cin >> n >> m;
 
-    // 맵 입력
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < m; ++j) {
-            cin >> a[i][j];
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < m; j++)
+            cin >> board[i][j];
+
+    int lo = 0;                     // 답이 될 수 있는 가장 작은 숫자 값을 설정합니다.
+    int hi = MAX_H;                 // 답이 될 수 있는 가장 큰 숫자 값을 설정합니다.
+    int ans = MAX_H;                // 답을 저장합니다.
+
+    while(lo <= hi) {               // [lo, hi]가 유효한 구간이면 계속 수행합니다.
+        int mid = (lo + hi) / 2;    // 가운데 위치를 선택합니다.
+        if(reachable(mid)) {        // 결정문제에 대한 답이 Yes라면
+            hi = mid - 1;           // 왼쪽에 조건을 만족하는 숫자가 더 있을 가능성 때문에 right를 바꿔줍니다.
+            ans = min(ans, mid);    // 답의 후보들 중 최솟값을 계속 갱신해줍니다.
         }
+        else
+            lo = mid + 1;           // 결정문제에 대한 답이 No라면 right를 바꿔줍니다.
     }
 
-    // 이분 탐색을 통해 최적화된 k 값 찾기
-    int l = 0, r = 500, ans = INT_MAX;
-
-    while (l <= r) {
-        int mid = (l + r) / 2;
-
-        // 방문 배열 초기화
-        fill(&visited[0][0], &visited[0][0] + sizeof(visited) / sizeof(bool), false);
-
-        if (canReach(mid)) {
-            ans = min(ans, mid);
-            r = mid - 1;
-        }
-        else {
-            l = mid + 1;
-        }
-    }
-
-    cout << ans + 1<< endl;
-    return 0;
+    // 정답을 출력합니다.
+    cout << ans;
+    return 0;   
 }
