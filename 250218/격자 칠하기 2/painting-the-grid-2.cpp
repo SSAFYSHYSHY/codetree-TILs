@@ -1,95 +1,90 @@
 #include <iostream>
 #include <queue>
-#include <algorithm>
 #include <vector>
 #include <cstring>
+#include <algorithm>
 
 using namespace std;
 
 int n;
-int arr[51][51];
-bool visited[51][51] = { false, };
-int min_val = 21e9;
-int max_val = 0;
+int grid[101][101];  // 최대 100x100
+bool visited[101][101];
 
-int dx[] = { -1,1,0,0 };
-int dy[] = { 0,0,-1,1 };
+int dx[] = {-1, 1, 0, 0};
+int dy[] = {0, 0, -1, 1};
 
-void Input() {
-	cin >> n;
-
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			cin >> arr[i][j];
-
-			min_val = min(arr[i][j], min_val);
-			max_val = max(arr[i][j], max_val);
-		}
-	}
-}
-
-bool InRange(int x, int y) {
-	return 0 <= x && x < n && 0 <= y && y < n;
-}
-
+// ✅ BFS 한 번만 실행해서 색칠 가능한 영역 확인
 bool Check(int D) {
-	int half = (n * n + 1) / 2;
+    memset(visited, false, sizeof(visited));
+    int half = (n * n + 1) / 2;  // 과반수 조건 (반올림)
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			memset(visited, false, sizeof(visited));
+    int max_painted = 0;
 
-			queue<pair<int, int>> q;
-			q.push({ i,j });
-			visited[i][j] = true;
+    // 모든 칸을 시작점으로 한 번만 BFS 수행
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (visited[i][j]) continue; // 이미 탐색한 곳은 스킵
 
-			int cnt = 1;
+            queue<pair<int, int>> q;
+            vector<pair<int, int>> region;
+            q.push({i, j});
+            visited[i][j] = true;
+            region.push_back({i, j});
 
-			while (!q.empty()) {
-				int x = q.front().first;
-				int y = q.front().second;
-				q.pop();
+            while (!q.empty()) {
+                int x = q.front().first;
+                int y = q.front().second;
+                q.pop();
 
-				for (int i = 0; i < 4; i++) {
-					int nx = x + dx[i];
-					int ny = y + dy[i];
+                for (int d = 0; d < 4; d++) {
+                    int nx = x + dx[d];
+                    int ny = y + dy[d];
 
-					if (InRange(nx, ny) && !visited[nx][ny]) {
-						if (abs(arr[nx][ny] - arr[x][y]) <= D) {
-							visited[nx][ny] = true;
-							q.push({ nx,ny });
-							cnt++;
-						}
-					}
-				}
-			}
+                    if (nx >= 0 && ny >= 0 && nx < n && ny < n && !visited[nx][ny]) {
+                        if (abs(grid[nx][ny] - grid[x][y]) <= D) {
+                            visited[nx][ny] = true;
+                            q.push({nx, ny});
+                            region.push_back({nx, ny});
+                        }
+                    }
+                }
+            }
+            
+            // 최대 색칠 가능 칸 갱신
+            max_painted = max(max_painted, (int)region.size());
 
-			if (cnt >= half) return true;
-		}
-	}
-
-	return false;
+            // 만약 색칠된 칸이 과반수 이상이면 True 반환
+            if (max_painted >= half) return true;
+        }
+    }
+    return false;
 }
 
 int main() {
-	Input();
+    cin >> n;
+    int minValue = 1e9, maxValue = 0;
 
-	//left, d의 최소값.
-	int left = 0, right = max_val - min_val;
-	int ans = right;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> grid[i][j];
+            minValue = min(minValue, grid[i][j]);
+            maxValue = max(maxValue, grid[i][j]);
+        }
+    }
 
-	while (left <= right) {
-		int mid = (left + right) / 2;
+    // ✅ 이진 탐색으로 최소 D 값 찾기
+    int left = 0, right = maxValue - minValue, answer = right;
 
-		if (Check(mid)) {
-			ans = mid;
-			right = mid - 1;
-		}
-		else {
-			left = mid + 1;
-		}
-	}
+    while (left <= right) {
+        int mid = (left + right) / 2;
 
-	cout << ans;
-	
+        if (Check(mid)) {
+            answer = mid;  // 가능한 최소 D 갱신
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+
+    cout << answer;
 }
