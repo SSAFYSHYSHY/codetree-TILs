@@ -19,15 +19,11 @@ bool Calc(double mid) {
         double lnum2 = max(0.0, arr[i] - velo[i] * mid);
         double rnum2 = min(MAX_N, arr[i] + velo[i] * mid); // velocity 적용
 
-        if (lnum2 > rnum || rnum2 < lnum) {
-            return false;
-        }
-
         lnum = max(lnum, lnum2);
         rnum = min(rnum, rnum2);
     }
 
-    return true;
+    return lnum <= rnum;
 }
 
 int main() {
@@ -38,7 +34,7 @@ int main() {
     for (int i = 0; i < n; i++) cin >> arr[i];
     for (int i = 0; i < n; i++) cin >> velo[i];
 
-    while (l <= r) {
+    for(int i = 1 ; i<= 100 ; i++) {
         double mid = (l + r) / 2;
 
         if (Calc(mid)) {
