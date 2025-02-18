@@ -78,6 +78,8 @@ int Simul() {
 		new_arr[v1[i].x][v1[i].y] = 1;
 	}
 
+
+
 	//2 의 위치에 대해서 BFS 진행. 2 로 바꾸지는 않고 visited로만 연산.
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < m; j++) {
@@ -87,11 +89,12 @@ int Simul() {
 		}
 	}
 
+
 	//ans를 누적해서 반환.
 	int cnt = 0;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < m; j++) {
-			if (!visited[i][j] && new_arr[i][j] == 0) {
+			if (new_arr[i][j] == 0) {
 				cnt++;
 			}
 		}
@@ -120,7 +123,7 @@ void Back(int now, int idx) {
 int main() {
 	Input();
 
-	Back(0, 0);
+	Back(0, -1);
 
 	cout << ans;
 }
