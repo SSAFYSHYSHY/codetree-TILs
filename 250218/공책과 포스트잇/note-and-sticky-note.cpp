@@ -4,13 +4,13 @@
 
 using namespace std;
 
-int n, k, l;
-int arr[100001];
+long long n, k, l;
+long long arr[100001];
 
-bool Calc(int mid) {
-	int cnt = 0;
+bool Calc(long long mid) {
+	long long cnt = 0;
 
-	for (int i = n - mid; i < n; i++) {
+	for (long long i = n - mid; i < n; i++) {
 		if (arr[i] < mid) {
 			cnt += (mid - arr[i]);
 		}
@@ -21,13 +21,13 @@ bool Calc(int mid) {
 
 int main() {
 	cin >> n >> k >> l;
-	for (int i = 0; i < n; i++) {
+	for (long long i = 0; i < n; i++) {
 		cin >> arr[i];
 	}
 	sort(arr, arr + n);
 
-	int le = 1, re = n;
-	int ans = 0;
+	long long le = 1, re = n;
+	long long ans = 0;
 
 	while (le <= re) {
 		int mid = (le + re) / 2;
