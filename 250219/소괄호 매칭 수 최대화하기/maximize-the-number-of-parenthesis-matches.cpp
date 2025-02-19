@@ -1,44 +1,56 @@
 #include <iostream>
-#include <vector>
+#include <string>
+#include <tuple>
 #include <algorithm>
+
+#define MAX_N 100000
+#define MAX_S 500000
 
 using namespace std;
 
+int n;
+char s_arr[MAX_S];
+pair<int, int> brackets[MAX_N];
+
+long long ans;
+
+bool cmp(pair<int, int> b1, pair<int, int> b2) {
+    int open1, closed1;
+    tie(open1, closed1) = b1;
+    int open2, closed2;
+    tie(open2, closed2) = b2;
+    return (long long)open1 * closed2 > (long long)open2 * closed1;
+}
+
 int main() {
-    int N;
-    cin >> N;
-    
-    vector<string> brackets(N);
-    for (int i = 0; i < N; i++) {
-        cin >> brackets[i];
-    }
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        cin >> s_arr;
+        string s = s_arr;
+        int open = 0, closed = 0; 
+        for (int j = 0; j < (int)s.size(); j++) {
+            if (s[j] == '(')
+                open++;
+            else {
+                closed++;
 
-    int open = 0, close = 0;
-    
-    int score = 0;
-
-    for (const string& s : brackets) {
-        int balance = 0;
-        for (char c : s) {
-            if (c == '(') {
-                balance++;
-            } else if (c == ')') {
-                if (balance > 0) { 
-                    balance--;
-                    score++;
-                }
+                ans += open;
             }
         }
-        if (balance > 0) {
-            open += balance;
-        } else if (balance < 0) {
-            close -= balance;
-        }
+        brackets[i] = make_pair(open, closed);
     }
 
-    score += min(open, close);
+    sort(brackets, brackets + n, cmp);
 
-    cout << score << endl;
+    int open_sum = 0;
+    for (int i = 0; i < n; i++) {
+        int open, closed;
+        tie(open, closed) = brackets[i];
+        ans += (long long)open_sum * closed;
 
+        open_sum += open;
+    }
+
+    cout << ans;
     return 0;
 }
