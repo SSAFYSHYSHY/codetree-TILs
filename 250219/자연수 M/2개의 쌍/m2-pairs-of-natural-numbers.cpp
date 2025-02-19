@@ -1,31 +1,49 @@
 #include <iostream>
-#include <vector>
 #include <algorithm>
+#include <vector>
+#include <tuple>
 
 using namespace std;
 
-int minMaxPairSum(vector<int>& nums) {
-    sort(nums.begin(), nums.end());  // 정렬
-    int m = nums.size();
-    int minC = 0;
+int n;
+vector<pair<int, int> > nums;
 
-    for (int i = 0; i < m / 2; i++) {
-        int sum = nums[i] + nums[m - 1 - i];  // 가장 작은 값 + 가장 큰 값
-        minC = max(minC, sum);  // 최댓값을 최소화
+int ans;
+
+void Input() {
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        int x, y;
+        cin >> x >> y;
+        nums.push_back(make_pair(y, x));
     }
-
-    return minC;
+    sort(nums.begin(), nums.end());
 }
 
 int main() {
-    int m;
-    cin >> m;
+    int l = 0, r = n - 1;
     
-    vector<int> nums(m);
-    for (int i = 0; i < m; i++) {
-        cin >> nums[i];
-    }
+    while (l <= r) {
+        int ly, lx;
+        tie(ly, lx) = nums[l];
+        int ry, rx;
+        tie(ry, rx) = nums[r];
 
-    cout << minMaxPairSum(nums) + 1<< endl;
+        ans = max(ans, ly + ry);
+
+        if (lx < rx) {
+            nums[r] = make_pair(ry, rx - lx);
+            l++;
+        }
+        else if (lx > rx) {
+            nums[l] = make_pair(ly, lx - rx);
+            r--;
+        }
+        else {
+            l++;
+            r--;
+        }
+    }
+    cout << ans;
     return 0;
 }
