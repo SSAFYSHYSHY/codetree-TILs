@@ -5,32 +5,31 @@
 
 using namespace std;
 
-// 폭탄 정보를 저장하는 구조체
 struct Bomb {
     int score, time_limit;
 };
 
-// 정렬 기준: 시간 제한이 짧은 순으로 정렬
+// 정렬 기준: 시간 제한이 긴 순으로 정렬 (내림차순)
 bool cmp(const Bomb &a, const Bomb &b) {
-    return a.time_limit < b.time_limit;
+    return a.time_limit > b.time_limit;
 }
 
 int maxBombScore(int n, vector<Bomb>& bombs) {
-    // 시간 제한이 짧은 순으로 정렬
+    // 제한 시간이 긴 순서로 정렬
     sort(bombs.begin(), bombs.end(), cmp);
 
-    priority_queue<int> pq;  // 최대 힙 (점수가 높은 폭탄을 우선 선택)
+    priority_queue<int, vector<int>, greater<int>> pq;  // 최소 힙 (점수가 낮은 것 우선 삭제)
     int totalScore = 0;
-    int time = 0;
+    int currentTime = 0;
 
     for (const Bomb &bomb : bombs) {
-        if (time < bomb.time_limit) {
-            // 해체 가능하면 우선 큐에 추가하고 시간 증가
+        if (currentTime < bomb.time_limit) {
+            // 아직 시간 내에 해체 가능하면 추가
             pq.push(bomb.score);
             totalScore += bomb.score;
-            time++;
+            currentTime++;
         } else if (!pq.empty() && pq.top() < bomb.score) {
-            // 더 높은 점수의 폭탄이 있으면 교체 (최적화)
+            // 점수가 더 높은 폭탄을 해체하기 위해 낮은 점수의 폭탄 제거
             totalScore += bomb.score - pq.top();
             pq.pop();
             pq.push(bomb.score);
