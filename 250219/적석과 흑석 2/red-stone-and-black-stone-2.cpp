@@ -1,45 +1,49 @@
 #include <iostream>
+#include <set>
+#include <tuple>
 #include <vector>
 #include <algorithm>
 
+#define MAX_C 100000
+
 using namespace std;
 
+// 변수 선언
+int c, n;
+
+int red_stones[MAX_C];
+set<int> red_s;
+vector<pair<int, int> > black_stones;
+
 int main() {
-    int C, N;
-    cin >> C >> N;
+    // 입력:
+    cin >> c >> n;
+    for (int i = 0; i < c; i++)
+        cin >> red_stones[i];
 
-    vector<int> red(C); // 빨간 돌 (T값)
-    vector<pair<int, int>> black(N); // 검은 돌 (A, B)
-
-    for (int i = 0; i < C; i++) {
-        cin >> red[i];
+    for (int i = 0; i < n; i++) {
+        int a, b;
+        cin >> a >> b;
+        black_stones.push_back(make_pair(b, a));
     }
 
-    for (int i = 0; i < N; i++) {
-        cin >> black[i].first >> black[i].second;
-    }
+    for (int i = 0; i < c; i++)
+        red_s.insert(red_stones[i]);
 
-    // 빨간 돌 오름차순 정렬
-    sort(red.begin(), red.end());
-    // 검은 돌 B 기준 오름차순 정렬
-    sort(black.begin(), black.end(), [](pair<int, int> a, pair<int, int> b) {
-        return a.second < b.second;
-    });
+    sort(black_stones.begin(), black_stones.end());
 
-    int count = 0; // 매칭된 쌍의 개수
-    int j = 0; // 검은 돌 인덱스
-
-    for (int i = 0; i < C; i++) {
-        while (j < N && black[j].second < red[i]) {
-            j++; // 빨간 돌을 포함할 수 없는 검은 돌 건너뜀
-        }
-
-        if (j < N && black[j].first <= red[i] && red[i] <= black[j].second) {
-            count++; // 매칭 성공
-            j++; // 해당 검은 돌 사용했으므로 다음 검은 돌로 이동
+    int ans = 0;
+    for (int i = 0; i < n; i++) {
+        int a, b;
+        tie(b, a) = black_stones[i];
+        if (red_s.lower_bound(a) != red_s.end()) {
+            int ti = *red_s.lower_bound(a);
+            if (ti <= b) {
+                ans++;
+                red_s.erase(ti);
+            }
         }
     }
-
-    cout << count << endl;
+    cout << ans;
     return 0;
 }
