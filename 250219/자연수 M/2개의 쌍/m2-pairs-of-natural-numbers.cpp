@@ -21,6 +21,8 @@ void Input() {
 }
 
 int main() {
+    Input();
+
     int l = 0, r = n - 1;
     
     while (l <= r) {
