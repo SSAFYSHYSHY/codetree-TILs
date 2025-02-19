@@ -13,14 +13,19 @@ int main() {
 	}
 
 	int sum = 0;
+	int ans = -21e8;
 	for (int i = 0; i < n; i++) {
-		sum += arr[i];
-
 		if (sum < 0) {
-			sum = 0;
+			sum = arr[i];
 		}
+
+		else {
+			sum += arr[i];
+		}
+
+		ans = max(ans, sum);
 	}
 
-	cout << sum;
+	cout << ans;
 
 }
