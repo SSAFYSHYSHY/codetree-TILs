@@ -14,7 +14,7 @@ int main() {
     for (int i = 0; i < C; i++) {
         cin >> red[i];
     }
-    
+
     for (int i = 0; i < N; i++) {
         cin >> black[i].first >> black[i].second;
     }
