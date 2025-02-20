@@ -5,31 +5,54 @@ using namespace std;
 int n;
 int arr[101][101];
 
+int dx[] = { 0,0,1,0,-1 };
+int dy[] = { 0,1,0,-1,0 };
+
+bool InRange(int x, int y) {
+	return 0 <= x && x < n && 0 <= y && y < n;
+}
+
 int main() {
-    cin >> n;
+	cin >> n;
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            cin >> arr[i][j];
-        }
-    }
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> arr[i][j];
+		}
+	}
 
-    int ans = 0;
+	int cnt = 0;
+	for (int i = 1; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (arr[i - 1][j] == 0) {
+				cnt++;
 
-    // 오른쪽 아래에서 왼쪽 위로 올라오면서 체크
-    for (int i = n - 1; i >= 0; i--) {
-        for (int j = n - 1; j >= 0; j--) {
-            if (arr[i][j] == 0) { // 현재 위치가 0이면
-                ans++; // 반전 횟수 증가
-                // (0,0) ~ (i,j)까지 모든 값 반전
-                for (int x = 0; x <= i; x++) {
-                    for (int y = 0; y <= j; y++) {
-                        arr[x][y] ^= 1; // XOR 연산을 통해 0 <-> 1 반전
-                    }
-                }
-            }
-        }
-    }
+				for (int k = 0; k < 5; k++) {
+					int x = i + dx[k];
+					int y = j + dy[k];
 
-    cout << ans;
+					if (InRange(x, y) == false) {
+						continue;
+					}
+
+					arr[x][y] = 1 - arr[x][y];
+				}
+			}
+		}
+	}
+
+	bool flag = true;
+
+	for (int i = 0; i < n; i++) {
+		if (arr[n - 1][i] != 1) {
+			flag = false;
+		}
+	}
+
+	if (flag == false) {
+		cout << -1;
+	}
+	else {
+		cout << cnt;
+	}
 }
