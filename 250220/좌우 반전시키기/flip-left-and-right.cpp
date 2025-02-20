@@ -19,12 +19,15 @@ int main() {
         if (arr[i - 1] == 0) {
             // i 번째 칸을 눌러야 함
             count++;
-            arr[i - 1] ^= 1;
+            arr[i - 1] = 1;
             arr[i] ^= 1;
             if (i + 1 < n) {
                 arr[i + 1] ^= 1;
             }
         }
+    }
+    if(arr[n - 1] == 0) {
+        count = -1;
     }
 
     cout << count << endl;
