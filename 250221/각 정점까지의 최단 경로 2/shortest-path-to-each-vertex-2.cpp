@@ -38,7 +38,7 @@ int main() {
     // 결과 출력
     for (int i = 1; i <= N; i++) {
         for (int j = 1; j <= N; j++) {
-            if (dist[i][j] == INF) cout << "INF ";
+            if (dist[i][j] == INF) cout << "-1 ";
             else cout << dist[i][j] << " ";
         }
         cout << endl;
