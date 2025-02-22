@@ -3,71 +3,63 @@
 #include <algorithm>
 
 using namespace std;
-const long long INF = 1e9;  // 무한대 값 설정
 
-long long N, M, P, Q;
-vector<long long> redPoint;
-vector<vector<long long>> dist;
-
-bool hasRedPoint(long long A, long long B) {
-    if (A <= P || B <= P) return true; // 출발점 또는 도착점이 빨간점인 경우
-
-    // 경로 내 빨간점이 포함되는지 확인
-    for (long long red : redPoint) {
-        if (dist[A][red] != INF && dist[red][B] != INF) {
-            return true;
-        }
-    }
-    return false;
-}
+const int INF = 1e9;
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    cin >> N >> M >> P >> Q;
-    
-    // 거리 행렬 초기화
-    dist.assign(N + 1, vector<long long>(N + 1, INF));
-    for (long long i = 1; i <= N; i++) dist[i][i] = 0;
+    int n, m, p, q;
+    cin >> n >> m >> p >> q;
 
-    // 빨간점 리스트 저장
-    for (long long i = 1; i <= P; i++) {
-        redPoint.push_back(i);
+    vector<vector<int>> graph(n + 1, vector<int>(n + 1, INF));
+
+    // 거리 행렬 초기화
+    for (int i = 1; i <= n; i++) {
+        graph[i][i] = 0;
     }
 
-    // 간선 입력
-    for (long long i = 0; i < M; i++) {
-        long long u, v, w;
-        cin >> u >> v >> w;
-        dist[u][v] = w;
+    // 간선 정보 입력
+    for (int i = 0; i < m; i++) {
+        int s, e, v;
+        cin >> s >> e >> v;
+        graph[s][e] = v;
     }
 
     // Floyd-Warshall 알고리즘 수행
-    for (long long k = 1; k <= N; k++) {
-        for (long long i = 1; i <= N; i++) {
-            for (long long j = 1; j <= N; j++) {
-                if (dist[i][k] != INF && dist[k][j] != INF) {
-                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+    for (int k = 1; k <= n; k++) {
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (graph[i][k] < INF && graph[k][j] < INF) { // 오버플로우 방지
+                    graph[i][j] = min(graph[i][j], graph[i][k] + graph[k][j]);
                 }
             }
         }
     }
 
-    long long validQueries = 0;
-    long long totalCost = 0;
+    long long isGo = 0;
+    long long answer = 0;
 
     // 질의 처리
-    for (long long i = 0; i < Q; i++) {
-        long long A, B;
-        cin >> A >> B;
+    for (int testCase = 0; testCase < q; testCase++) {
+        int start, end;
+        cin >> start >> end;
 
-        if (dist[A][B] != INF && hasRedPoint(A, B)) {
-            validQueries++;
-            totalCost += dist[A][B];
+        int dist = INF;
+        for (int i = 1; i <= p; i++) {
+            if (graph[start][i] < INF && graph[i][end] < INF) { // 빨간점을 경유할 수 있는 경우
+                dist = min(dist, graph[start][i] + graph[i][end]);
+            }
         }
+
+        if (dist >= INF) continue; // 유효한 경로가 없으면 건너뜀
+
+        answer += dist;
+        isGo++;
     }
 
-    cout << validQueries << '\n' << totalCost << '\n';
+    cout << isGo << '\n' << answer << '\n';
+
     return 0;
 }
