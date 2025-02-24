@@ -1,84 +1,103 @@
 #include <iostream>
-#include <vector>
 #include <queue>
-#include <tuple>
-#include <map>
+#include <vector>
+#include <climits>
+#include <algorithm>
 
 using namespace std;
 
-const int INF = 1e9;
-using tiii = tuple<int, int, int>;  // (현재 비용, 현재 위치, 현재 버스 ID)
-
-// 버스 정보를 저장할 구조체
-struct Bus {
-    int fare;
-    vector<int> stops;
+//다음 노드, 버스 번호, 탑승 순서, 요금
+struct Node {
+	int next_idx, num, num2;
+	long long cost;
 };
 
-int A, B, N;
-vector<Bus> buses;
-map<int, vector<pair<int, int>>> graph;  // 지점별로 (다음 지점, 버스 ID) 저장
-vector<int> minCost(1001, INF);  // 최소 비용
-vector<int> minTime(1001, INF);  // 최소 시간
+int a, b, n;
 
-void dijkstra() {
-    priority_queue<tiii, vector<tiii>, greater<>> pq;
-    pq.emplace(0, A, -1);  // (비용, 현재 위치, 이전 버스 ID)
-    minCost[A] = 0;
-    minTime[A] = 0;
+vector<Node> v[1001];
+pair<long long, int> dist[1001][1001];
+priority_queue<tuple<long long, int, int, int, int>, vector<tuple<long long, int, int, int, int>>, greater<>> pq;
 
-    while (!pq.empty()) {
-        auto [cost, node, busId] = pq.top();
-        pq.pop();
+void Input() {
+	cin >> a >> b >> n;
 
-        if (cost > minCost[node]) continue;  // 기존 비용보다 크면 무시
+	for (int i = 1; i <= n; i++) {
+		long long cost;
+		int cnt;
+		cin >> cost >> cnt;
 
-        for (auto& [next, nextBusId] : graph[node]) {
-            int nextCost = cost;
-            int nextTime = minTime[node] + 1;
+		vector<int> v2;
 
-            if (nextBusId != busId) {  // 환승하는 경우
-                nextCost += buses[nextBusId].fare;
-            }
+		for (int j = 0; j < cnt; j++) {
+			int x;
+			cin >> x;
+			v2.push_back(x);
+		}
 
-            if (nextCost < minCost[next] || (nextCost == minCost[next] && nextTime < minTime[next])) {
-                minCost[next] = nextCost;
-                minTime[next] = nextTime;
-                pq.emplace(nextCost, next, nextBusId);
-            }
-        }
-    }
+		for (int j = 0; j < cnt - 1; j++) {
+			v[v2[j]].push_back({ v2[j + 1],i,j + 1, cost });
+		}
+	}
+
+	//dist 초기화.
+	for (int i = 1; i <= 1000; i++) {
+		for (int j = 1; j <= n; j++) {
+			dist[i][j] = { LLONG_MAX, INT_MAX };
+		}
+	}
+
+	for (int i = 1; i <= n; i++) {
+		dist[a][i] = { 0,0 };
+	}
 }
 
 int main() {
-    cin >> A >> B >> N;
-    buses.resize(N);
+	Input();
 
-    for (int i = 0; i < N; i++) {
-        int fare, count;
-        cin >> fare >> count;
-        buses[i].fare = fare;
-        buses[i].stops.resize(count);
+	pq.push({ 0,0,a,0,0 });
 
-        for (int j = 0; j < count; j++) {
-            cin >> buses[i].stops[j];
-        }
+	while (!pq.empty()) {
+		long long now_cost;
+		int now_time, now_idx, now_num, now_num2;
+		tie(now_cost, now_time, now_idx, now_num, now_num2) = pq.top();
+		pq.pop();
 
-        // 버스 노선 연결
-        for (int j = 0; j < count - 1; j++) {
-            int u = buses[i].stops[j], v = buses[i].stops[j + 1];
-            graph[u].emplace_back(v, i);
-            graph[v].emplace_back(u, i);
-        }
-    }
+		for (int i = 0; i < v[now_idx].size(); i++) {
+			int next_idx, next_num, next_num2;
+			long long next_cost;
 
-    dijkstra();
+			next_idx = v[now_idx][i].next_idx;
+			next_num = v[now_idx][i].num;
+			next_num2 = v[now_idx][i].num2;
+			next_cost = v[now_idx][i].cost;
 
-    if (minCost[B] == INF || minTime[B] == INF) {
-        cout << "-1 -1";
-    }
-    else {
-        cout << minCost[B] << " " << minTime[B] << endl;
-    }
-    return 0;
+			long long new_cost = now_cost;
+			int new_time = now_time + 1;
+
+			if (now_num != next_num) {
+				new_cost += next_cost;
+			}
+
+			if (dist[next_idx][next_num] > make_pair(new_cost, new_time)) {
+				dist[next_idx][next_num] = { new_cost, new_time };
+				pq.push(make_tuple(new_cost, new_time, next_idx, next_num, next_num2));
+			}
+		}
+	}
+
+	
+	pair<long long, int> ans = { LLONG_MAX, INT_MAX };
+	for (int i = 1; i <= n; i++) {
+		ans = min(ans, dist[b][i]);
+	}
+
+	if (ans.first == LLONG_MAX) {
+		cout << "-1 -1" << "\n";
+	}
+	else {
+		cout << ans.first << " " << ans.second << "\n";
+	}
+
+
 }
+
