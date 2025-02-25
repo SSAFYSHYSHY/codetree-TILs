@@ -1,96 +1,89 @@
 #include <iostream>
 #include <vector>
-#include <queue>
-#include <tuple>
-#include <limits>
+#include <algorithm>
+
+#define MAX_N 1000
 
 using namespace std;
 
-const int INF = numeric_limits<int>::max();
-int N, M;
-vector<vector<pair<int, int>>> adj;  // 인접 리스트 (노드, 가중치)
-vector<vector<bool>> used;           // A가 사용한 간선 표시
+int n, m;
+int graph[MAX_N + 1][MAX_N + 1];
+bool visited[MAX_N + 1];
+int dist[MAX_N + 1];
 
-// 다익스트라 알고리즘
-vector<int> dijkstra(int start, vector<int>& parent) {
-    vector<int> dist(N + 1, INF);
-    priority_queue<tuple<int, int>, vector<tuple<int, int>>, greater<>> pq;
-    
-    dist[start] = 0;
-    pq.push({0, start});
-    
-    while (!pq.empty()) {
-        auto [cost, cur] = pq.top(); pq.pop();
-        
-        if (dist[cur] < cost) continue;  // 이미 더 짧은 경로가 존재하면 무시
-        
-        for (auto [next, weight] : adj[cur]) {
-            if (dist[next] > cost + weight) { 
-                dist[next] = cost + weight;
-                pq.push({dist[next], next});
-                parent[next] = cur;  // 경로 기록
+void Dijkstra(int k) {
+    for (int i = 1; i <= n; i++)
+        dist[i] = (int)1e9;
+
+    dist[k] = 0;
+
+    for (int i = 1; i <= n; i++)
+        visited[i] = false;
+
+    for (int i = 1; i <= n; i++) {
+        int min_index = -1;
+        for (int j = 1; j <= n; j++) {
+            if (visited[j])
+                continue;
+
+            if (min_index == -1 || dist[min_index] > dist[j])
+                min_index = j;
+        }
+
+        visited[min_index] = true;
+
+        for (int j = 1; j <= n; j++) {
+            if (graph[min_index][j] == 0)
+                continue;
+
+            if (dist[j] > dist[min_index] + graph[min_index][j]) {
+                dist[j] = dist[min_index] + graph[min_index][j];
             }
         }
-    }
-    
-    return dist;
-}
-
-// A의 최단 경로를 따라 사용된 간선을 제거
-void remove_used_edges(int start, int end, vector<int>& parent) {
-    int node = end;
-    while (node != start) {
-        int prev = parent[node];
-        for (auto& [next, weight] : adj[prev]) {
-            if (next == node) {
-                used[prev][next] = true; // 사용된 간선 표시
-                break;
-            }
-        }
-        node = prev;
     }
 }
 
 int main() {
-    cin >> N >> M;
-    adj.resize(N + 1);
-    used.assign(N + 1, vector<bool>(N + 1, false));
+    cin >> n >> m;
 
-    for (int i = 0; i < M; i++) {
-        int u, v, w;
-        cin >> u >> v >> w;
-        adj[u].push_back({v, w});
-        adj[v].push_back({u, w});  // 양방향 그래프
+    while (m--) {
+        int x, y, z;
+        cin >> x >> y >> z;
+        graph[x][y] = z;
+        graph[y][x] = z;
     }
 
-    vector<int> parentA(N + 1, -1);
-    vector<int> distA = dijkstra(1, parentA); // A의 최단 경로 계산
+    Dijkstra(n);
 
-    remove_used_edges(1, N, parentA); // A가 사용한 간선 제거
+    int x = 1;
+    vector<int> vertices;
+    vertices.push_back(x);
+    while (x != n) {
+        for (int i = 1; i <= n; i++) {
+            if (graph[i][x] == 0)
+                continue;
 
-    // B를 위한 새로운 다익스트라 실행 (A가 사용한 간선 제외)
-    vector<int> parentB(N + 1, -1);
-    vector<int> distB(N + 1, INF);
-    priority_queue<tuple<int, int>, vector<tuple<int, int>>, greater<>> pq;
-
-    distB[1] = 0;
-    pq.push({0, 1});
-
-    while (!pq.empty()) {
-        auto [cost, cur] = pq.top(); pq.pop();
-        if (distB[cur] < cost) continue;
-
-        for (auto [next, weight] : adj[cur]) {
-            if (used[cur][next]) continue;  // A가 사용한 간선은 패스
-            if (distB[next] > cost + weight) {
-                distB[next] = cost + weight;
-                pq.push({distB[next], next});
-                parentB[next] = cur;
+            if (dist[i] + graph[i][x] == dist[x]) {
+                x = i;
+                break;
             }
         }
+        vertices.push_back(x);
     }
 
-    cout << (distB[N] == INF ? -1 : distB[N]) << '\n'; // B가 도달 가능하면 거리 출력, 불가능하면 -1
+    for (int i = 0; i < (int)vertices.size() - 1; i++) {
+        int x = vertices[i];
+        int y = vertices[i + 1];
+        graph[x][y] = 0;
+        graph[y][x] = 0;
+    }
 
+    Dijkstra(1);
+
+    int ans = dist[n];
+    if (ans == (int)1e9)
+        ans = -1;
+
+    cout << ans;
     return 0;
 }
