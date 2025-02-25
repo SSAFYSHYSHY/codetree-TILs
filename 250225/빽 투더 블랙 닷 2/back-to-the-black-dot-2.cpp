@@ -6,7 +6,7 @@
 using namespace std;
 
 long long n, m, r1, r2;
-vector<pair<long long, long long>> graph[1001];  // 인접 리스트 (u -> {v, weight})
+vector<pair<long long, long long>> graph[100001];  // 인접 리스트 (u -> {v, weight})
 
 // 다익스트라: 특정 시작점에서 모든 노드까지 최단 거리 계산
 vector<long long> dijkstra(long long start) {
