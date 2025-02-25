@@ -1,69 +1,87 @@
 #include <iostream>
 #include <vector>
+#include <tuple>
 #include <queue>
+#include <algorithm>
 #include <climits>
+
+#define MAX_N 100000
 
 using namespace std;
 
-long long n, m, r1, r2;
-vector<pair<long long, long long>> graph[100001];  // 인접 리스트 (u -> {v, weight})
+// 변수 선언
+int n, m;
+int a, b;
+vector<pair<int, int> > graph[MAX_N + 1];
+priority_queue<pair<int, int> > pq;
 
-// 다익스트라: 특정 시작점에서 모든 노드까지 최단 거리 계산
-vector<long long> dijkstra(long long start) {
-    vector<long long> dist(n + 1, LLONG_MAX);
-    priority_queue<pair<long long, long long>, vector<pair<long long, long long>>, greater<>> pq;
+int red_dist1[MAX_N + 1];
+int red_dist2[MAX_N + 1];
 
-    dist[start] = 0;
-    pq.push({0, start});
+int ans = INT_MAX;
+
+void Dijkstra(int k, int dist[]) {
+    for (int i = 1; i <= n; i++)
+        dist[i] = (int)1e8;
+
+    dist[k] = 0;
+
+    pq.push(make_pair(-0, k));
 
     while (!pq.empty()) {
-        long long now_dist = pq.top().first;
-        long long now = pq.top().second;
+        int min_dist, min_index;
+        tie(min_dist, min_index) = pq.top();
         pq.pop();
 
-        if (now_dist > dist[now]) continue;
+        min_dist = -min_dist;
 
-        for (auto &[next, weight] : graph[now]) {
-            long long new_dist = now_dist + weight;
-            if (new_dist < dist[next]) {
-                dist[next] = new_dist;
-                pq.push({new_dist, next});
+        if (min_dist != dist[min_index])
+            continue;
+
+        for (int j = 0; j < (int)graph[min_index].size(); j++) {
+            int target_index, target_dist;
+            tie(target_index, target_dist) = graph[min_index][j];
+
+            int new_dist = dist[min_index] + target_dist;
+            if (dist[target_index] > new_dist) {
+                dist[target_index] = new_dist;
+                pq.push(make_pair(-new_dist, target_index));
             }
         }
     }
-    return dist;
 }
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(0);
-
+    // 입력
     cin >> n >> m;
-    cin >> r1 >> r2;
+    cin >> a >> b;
 
-    for (long long i = 0; i < m; i++) {
-        long long u, v, w;
-        cin >> u >> v >> w;
-        graph[u].push_back({v, w});
-        graph[v].push_back({u, w});
+    while (m--) {
+        int x, y, z;
+        cin >> x >> y >> z;
+        graph[x].push_back(make_pair(y, z));
+        graph[y].push_back(make_pair(x, z));
     }
 
-    // 모든 노드에서의 최단 거리 계산
-    vector<long long> dist_from_r1 = dijkstra(r1);
-    vector<long long> dist_from_r2 = dijkstra(r2);
+    Dijkstra(a, red_dist1);
+    Dijkstra(b, red_dist2);
 
-    long long min_distance = LLONG_MAX;
+    for (int i = 1; i <= n; i++) {
+        if (i == a || i == b)
+            continue;
 
-    // 가능한 검은색 점을 시작점으로 설정
-    for (long long i = 1; i <= n; i++) {
-        if (i == r1 || i == r2) continue; // 빨간 점은 시작점이 될 수 없음
+        if (red_dist1[i] != (int)1e8 && red_dist1[b] != (int)1e8
+            && red_dist2[i] != (int)1e8)
+            ans = min(ans, red_dist1[i] + red_dist1[b] + red_dist2[i]);
 
-        // i -> r1 -> r2 -> i 와 i -> r2 -> r1 -> i 중 최소값
-        long long route1 = dist_from_r1[i] + dist_from_r1[r2] + dist_from_r2[i];
-        long long route2 = dist_from_r2[i] + dist_from_r2[r1] + dist_from_r1[i];
-        min_distance = min(min_distance, min(route1, route2));
+        if (red_dist2[i] != (int)1e8 && red_dist2[a] != (int)1e8
+            && red_dist1[i] != (int)1e8)
+            ans = min(ans, red_dist2[i] + red_dist2[a] + red_dist1[i]);
     }
 
-    cout << min_distance << "\n";
+    if (ans == INT_MAX)
+        ans = -1;
+
+    cout << ans;
     return 0;
 }
