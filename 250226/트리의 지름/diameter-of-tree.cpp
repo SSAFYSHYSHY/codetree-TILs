@@ -7,6 +7,7 @@ using namespace std;
 bool visited[100001];
 vector<pair<int, int>> v[100001];
 int n, ans = 0;
+int dist[100001];
 
 void Input() {
 	cin >> n;
@@ -28,26 +29,46 @@ void DFS(int num, int sum) {
 
 		if (!visited[y]) {
 			visited[y] = true;
-			sum += cost;
+			dist[y] = sum + cost;
 
-			if(sum >= cost) {
-				ans = max(sum, ans);
-				DFS(y, sum);
-			}
-
-			sum -= cost;
-			visited[y] = false;
+			DFS(y, sum + cost);
 		}
 
 	}
 }
 
+pair<int, int> Calc(int x) {
+	for (int i = 1; i <= n; i++) {
+		visited[i] = false;
+		dist[i] = 0;
+	}
+
+	visited[x] = true;
+	dist[x] = 0;
+	DFS(x, 0);
+
+	int idx = -1;
+	int path = -1;
+
+	for (int i = 1; i <= n; i++) {
+		if (dist[i] > path) {
+			path = dist[i];
+			idx = i;
+		}
+	}
+
+	return make_pair(idx, path);
+}
+
+
 int main() {
 	Input();
 
-	//초기화.
-	visited[1] = true;
-	DFS(1, 0);
+	int idx;
+	tie(idx, ignore) = Calc(1);
 
-	cout << ans;
+	int dist;
+	tie(ignore, dist) = Calc(idx);
+
+	cout << dist;
 }
