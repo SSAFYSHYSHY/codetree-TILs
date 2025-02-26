@@ -10,21 +10,20 @@ vector<int> v[100001];
 bool visited[100001];
 
 void DFS(int x) {
-
-	//리프 노드이면 cnt++;
-	if (v[x].size() == 0) cnt++;
+	//리프 노드 판별
+	bool isLeaf = true;
+	visited[x] = true;
 
 	for (int i = 0; i < v[x].size(); i++) {
 		int y = v[x][i];
 
-		//가고자 하는 위치가 k 이면 continue; 볼 필요도 없음.
-		if (y == k) continue;
-	
 		if (!visited[y]) {
-			visited[y] = true;
+			isLeaf = false;
 			DFS(y);
 		}
 	}
+
+	if (isLeaf) cnt++;
 }
 
 int main() {
@@ -48,7 +47,7 @@ int main() {
 		return 0;
 	}
 
-	visited[start_x] = 1;
+	visited[k] = 1;
 	DFS(start_x);
 
 	cout << cnt;
