@@ -5,8 +5,8 @@
 using namespace std;
 
 int n, m;
-int dx[4] = {0, 0, 1, -1}; // 상하좌우 이동
-int dy[4] = {1, -1, 0, 0};
+int dx[4] = { 0, 0, 1, -1 }; // 상하좌우 이동
+int dy[4] = { 1, -1, 0, 0 };
 
 // 현재 격자를 비트마스크 정수로 변환
 int gridToBitmask(int grid[101][101], int n, int m) {
@@ -41,7 +41,7 @@ int bfs(int start, int n, int m) {
     queue<pair<int, int>> q;
     unordered_set<int> visited;
 
-    q.push({start, 0});
+    q.push({ start, 0 });
     visited.insert(start);
 
     int target = (1 << (n * m)) - 1;  // 모든 비트가 1인 상태
@@ -59,7 +59,7 @@ int bfs(int start, int n, int m) {
                 int newState = flip(state, i, j, n, m);
                 if (visited.find(newState) == visited.end()) {
                     visited.insert(newState);
-                    q.push({newState, steps + 1});
+                    q.push({ newState, steps + 1 });
                 }
             }
         }
@@ -69,6 +69,10 @@ int bfs(int start, int n, int m) {
 }
 
 int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
     cin >> n >> m;
     int grid[101][101];
 
