@@ -1,89 +1,87 @@
 #include <iostream>
-#include <queue>
-#include <unordered_set>
+
+#define MAX_N 100
+#define MAX_M 10
 
 using namespace std;
 
+const int dx[5] = { 0, -1, 0, 1, 0 }, dy[5] = { 0, 0, -1, 0, 1 };
+
 int n, m;
-int dx[4] = { 0, 0, 1, -1 }; // 상하좌우 이동
-int dy[4] = { 1, -1, 0, 0 };
+int board[MAX_N + 1][MAX_M + 1];
+int board_original[MAX_N + 1][MAX_M + 1];
 
-// 현재 격자를 비트마스크 정수로 변환
-int gridToBitmask(int grid[101][101], int n, int m) {
-    int bitmask = 0;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            if (grid[i][j] == 1) {
-                bitmask |= (1 << (i * m + j));  // 비트 위치에 1을 설정
-            }
-        }
-    }
-    return bitmask;
+bool isOutrange(int x, int y) {
+    return !(1 <= x and x <= n and 1 <= y and y <= m);
 }
 
-// 주어진 위치 (x, y)에 대해 상하좌우 및 자기 자신을 반전하는 비트마스크 연산
-int flip(int state, int x, int y, int n, int m) {
-    int pos = x * m + y;
-    state ^= (1 << pos);  // 자기 자신 반전
+int ans = 1e9;
 
-    for (int d = 0; d < 4; d++) {
-        int nx = x + dx[d], ny = y + dy[d];
-        if (nx >= 0 && ny >= 0 && nx < n && ny < m) {
-            int newPos = nx * m + ny;
-            state ^= (1 << newPos);  // 상하좌우 반전
-        }
-    }
-    return state;
-}
+int main() {
+    cin >> n >> m;
 
-// BFS를 사용한 최소 횟수 탐색
-int bfs(int start, int n, int m) {
-    queue<pair<int, int>> q;
-    unordered_set<int> visited;
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= m; j++)
+            cin >> board[i][j];
 
-    q.push({ start, 0 });
-    visited.insert(start);
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= m; j++)
+            board_original[i][j] = board[i][j];
 
-    int target = (1 << (n * m)) - 1;  // 모든 비트가 1인 상태
+    for (int state = 0; state < (1 << m); state++) {
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= m; j++)
+                board[i][j] = board_original[i][j];
 
-    while (!q.empty()) {
-        int state = q.front().first;
-        int steps = q.front().second;
-        q.pop();
+        for (int y = 1; y <= m; y++) {
+            if ((state >> (y - 1)) & 1) {
+                int x = 1;
+                for (int dir = 0; dir < 5; dir++) {
+                    int nx = x + dx[dir];
+                    int ny = y + dy[dir];
 
-        if (state == target) return steps;  // 모든 칸이 1이면 정답 반환
+                    if (isOutrange(nx, ny)) continue;
 
-        // 모든 칸을 하나씩 눌러본다
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                int newState = flip(state, i, j, n, m);
-                if (visited.find(newState) == visited.end()) {
-                    visited.insert(newState);
-                    q.push({ newState, steps + 1 });
+                    board[nx][ny] = 1 - board[nx][ny];
                 }
             }
         }
-    }
 
-    return -1;  // 모든 칸을 1로 만들 수 없는 경우 (문제에서 이런 경우는 없다고 가정)
-}
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(0);
-    cout.tie(0);
-
-    cin >> n >> m;
-    int grid[101][101];
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            cin >> grid[i][j];
+        int num = 0;
+        for (int y = 1; y <= m; y++) {
+            if ((state >> (y - 1)) & 1)
+                num++;
         }
+
+        int cnt = 0;
+        for (int i = 2; i <= n; i++)
+            for (int j = 1; j <= m; j++) {
+                if (board[i - 1][j] == 0) {
+                    num++;
+                    for (int dir = 0; dir < 5; dir++) {
+                        int nx = i + dx[dir];
+                        int ny = j + dy[dir];
+
+                        if (isOutrange(nx, ny))
+                            continue;
+
+                        board[nx][ny] = 1 - board[nx][ny];
+                    }
+                }
+            }
+
+        bool full_filled = true;
+        for (int j = 1; j <= m; j++)
+            if (!board[n][j]) full_filled = false;
+
+        if (full_filled)
+            ans = min(ans, num);
     }
 
-    int startState = gridToBitmask(grid, n, m);
-    cout << bfs(startState, n, m) << endl;
+    if (ans == 1e9)
+        cout << -1;
+    else
+        cout << ans;
 
     return 0;
 }
