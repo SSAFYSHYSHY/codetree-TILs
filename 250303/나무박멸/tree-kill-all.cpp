@@ -1,213 +1,154 @@
 #include <iostream>
-#include <algorithm>
-#include <cstring>
+
+#define MAX_N 20
+#define DIR_NUM 4
 
 using namespace std;
 
-int n, m, k, c, ans_cnt = 0;
+int n, m, k, c;
+int tree[MAX_N + 1][MAX_N + 1];
+int add_tree[MAX_N + 1][MAX_N + 1];
+int herb[MAX_N + 1][MAX_N + 1];
 
-int count_manage[21][21];
-int arr[21][21];
-int div_arr[21][21];
-int count_num[21][21];
-int new_arr[21][21];
-bool visited[21][21];
+int ans;
 
-int dx[] = {-1,1,0,0};
-int dy[] = {0,0,-1,1};
-
-int k_dx[] = { -1,-1,1,1 };
-int k_dy[] = { -1,1,-1,1 };
-
-void Input() {
-	cin >> n >> m >> k >> c;
-
-	memset(visited, false, sizeof(visited));
-
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			cin >> arr[i][j];
-		}
-	}
+bool IsOutRange(int x, int y) {
+    return !(1 <= x && x <= n && 1 <= y && y <= n);
 }
 
-
-void Print() {
-	cout << "\n\n";
-
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			cout << arr[i][j] << " ";
-		}
-		cout << "\n";
-	}
-	cout << "\n\n";
+void Init() {
+    cin >> n >> m >> k >> c;
+	for(int i = 1; i <= n; i++)
+		for(int j = 1; j <= n; j++)
+    		cin >> tree[i][j];
 }
 
+void StepOne() {
+    int dx[DIR_NUM] = {-1,  0, 1, 0};
+    int dy[DIR_NUM] = { 0, -1, 0, 1};
 
-void Manage() {
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (visited[i][j] == true && count_manage[i][j] > 0 ) {
-				count_manage[i][j]--;
-			}
+    for(int i = 1; i <= n; i++)
+		for(int j = 1; j <= n; j++) {
+            if(tree[i][j] <= 0) continue;
 
-			else if (visited[i][j] == true && count_manage[i][j] == 0) {
-				count_manage[i][j] = 0;
-				visited[i][j] = false;
-				arr[i][j] = 0;
-			}
-		}
-	}
+            int cnt = 0;
+			for(int dir = 0; dir < 4; dir++) {
+                int nx = i + dx[dir];
+                int ny = j + dy[dir];
+                if(IsOutRange(nx, ny)) continue;
+                if(tree[nx][ny] > 0) cnt++;
+            }
+            tree[i][j] += cnt;
+        }
 }
 
-bool InRange(int x, int y) {
-	return 0 <= x && x < n && 0 <= y && y < n;
+void StepTwo() {
+    int dx[DIR_NUM] = {-1,  0, 1, 0};
+    int dy[DIR_NUM] = { 0, -1, 0, 1};
+
+	for(int i = 1; i <= n; i++)
+		for(int j = 1; j <= n; j++) 
+            add_tree[i][j] = 0;
+
+    for(int i = 1; i <= n; i++)
+		for(int j = 1; j <= n; j++) {
+            if(tree[i][j] <= 0) continue;
+
+            int cnt = 0;
+            for(int dir = 0; dir < 4; dir++) {
+                int nx = i + dx[dir];
+                int ny = j + dy[dir];
+                if(IsOutRange(nx, ny)) continue;
+                if(herb[nx][ny]) continue;
+                if(tree[nx][ny] == 0) cnt++;
+            }
+
+            for(int dir = 0; dir < 4; dir++) {
+                int nx = i + dx[dir];
+                int ny = j + dy[dir];
+                if(IsOutRange(nx, ny)) continue;
+                if(herb[nx][ny]) continue;
+                if(tree[nx][ny] == 0) add_tree[nx][ny] += tree[i][j] / cnt;
+            }
+        }
+    for(int i = 1; i <= n; i++)
+		for(int j = 1; j <= n; j++) tree[i][j] += add_tree[i][j];
 }
 
-void Add() {
-	memset(new_arr, 0, sizeof(new_arr));
+void StepThree() {
+    int dx[DIR_NUM] = {-1,  1, 1, -1};
+    int dy[DIR_NUM] = {-1, -1, 1,  1};
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (arr[i][j] > 0) {
+    int max_del = 0;
+    int max_x = 1;
+    int max_y = 1;
 
-				for (int k = 0; k < 4; k++) {
-					int nx = i + dx[k];
-					int ny = j + dy[k];
+    for(int i = 1; i <= n; i++)
+		for(int j = 1; j <= n; j++) {
+            if(tree[i][j] <= 0) continue;
+            int cnt = tree[i][j];
+            for(int dir = 0; dir < 4; dir++) {
+                int nx = i;
+                int ny = j;
+				for(int x = 1; x <= k; x++) {
+                    nx = nx + dx[dir];
+                    ny = ny + dy[dir];
+                    if(IsOutRange(nx, ny)) break;
+                    if(tree[nx][ny] <= 0) break;
+                    cnt += tree[nx][ny];
+                }
+            }
+            if(max_del < cnt) {
+                max_del = cnt;
+                max_x = i;
+                max_y = j;
+            }
+        }
 
-					if (InRange(nx, ny)) {
-						// 0 이 아닌 이웃의 나무 끼리.
-						if (arr[nx][ny] > 0) {
-							arr[i][j]++;
-						}
-						else if (arr[nx][ny] == 0) {
-							new_arr[i][j]++;
-						}
-					}
-				}
-			}
-		}
-	}
+    ans += max_del;
+
+    if(tree[max_x][max_y] > 0) {
+        tree[max_x][max_y] = 0;
+        herb[max_x][max_y] = c;
+        for(int dir = 0; dir < 4; dir++) {
+            int nx = max_x;
+            int ny = max_y;
+            for(int x = 1; x <= k; x++) {
+                nx = nx + dx[dir];
+                ny = ny + dy[dir];
+                if(IsOutRange(nx, ny)) break;
+                if(tree[nx][ny] < 0) break;
+                if(tree[nx][ny] == 0) {
+                    herb[nx][ny] = c;
+                    break;
+                }
+                tree[nx][ny] = 0;
+                herb[nx][ny] = c;
+            }
+        }
+    }
 }
 
-void Div1() {
-
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			div_arr[i][j] = 0;
-		}
-	}
-
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (arr[i][j] > 0) {
-
-				for (int k = 0; k < 4; k++) {
-					int nx = i + dx[k];
-					int ny = j + dy[k];
-
-					if (InRange(nx, ny) && arr[nx][ny] == 0) {
-
-						div_arr[nx][ny] = div_arr[nx][ny] + (arr[i][j] / new_arr[i][j]);
-					}
-
-				}
-			}
-		}
-	}
-
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (arr[i][j] < 0) continue;
-
-			arr[i][j] += div_arr[i][j];
-		}
-	}
-}
-
-int Calc(int x, int y, int k) {
-	//대각선으로 이동해서 최대값을 찾기.
-	int sum = arr[x][y];
-
-	for (int i = 0; i < 4; i++) {
-		for (int j = 1; j <= k; j++) {
-			int nx = x + k_dx[i]*j;
-			int ny = y + k_dy[i]*j;
-
-			if (!InRange(nx, ny)) break;
-			if (arr[nx][ny] <= 0) break;
-
-			sum += arr[nx][ny];
-		}
-	}
-
-	return sum;
-}
-
-void Calc2(int x, int y, int k) {
-	ans_cnt += arr[x][y];
-	arr[x][y] = -2;
-	count_manage[x][y] = c;
-	visited[x][y] = true;
-
-	for (int i = 0; i < 4; i++) {
-		for (int j = 1; j <= k; j++) {
-			int nx = x + k_dx[i] * j;
-			int ny = y + k_dy[i] * j;
-
-			if (!InRange(nx, ny)) break;
-			if (arr[nx][ny] < 0) break;
-
-			ans_cnt += arr[nx][ny];
-			arr[nx][ny] = -2;
-			count_manage[nx][ny] = c;
-			visited[nx][ny] = true;
-		}
-	}
-}
-
-void Spray() {
-	int find_max = 0;
-	int max_x = 0, max_y = 0;
-
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (arr[i][j] > 0) {
-
-				//최대값 찾기. 같은 값을 무시해야지 동일한 값이 나오더라도 초기 발견한 
-				//i , j의 최소값을 찾을 수 있다.
-				//이는 for 문을 완전탐색 기법으로 진행했기 때문에 가능함.
-				if (find_max < Calc(i, j, k)) {
-					find_max = Calc(i, j, k);
-					max_x = i;
-					max_y = j;
-				}
-
-			}
-		}
-	}
-
-	//최대값을 응용해 K 만큼 대각선 범위에 대해서 -1을 제외하고 진행.
-	//-1을 마주하면 continue;
-	//그리고 count_manage[][]에 대해 C 갱신, 기존 배열에대해 -2 로 넣기.
-	Calc2(max_x, max_y, k);
-	Manage();
+void DeleteHerb() {
+    for(int i = 1; i <= n; i++)
+		for(int j = 1; j <= n; j++) 
+            if(herb[i][j] > 0) 
+                herb[i][j] -= 1;
 }
 
 int main() {
-	Input();
+    Init();
 
-	for (int i = 0; i < m; i++) {
-		//확장.
-		Add();
+    for(int i = 1; i <= m; i++) {
+        StepOne();
 
-		//나누기.
-		Div1();
+        StepTwo();
 
-		//제초제 뿌리기.
-		Spray();
-	}
+        DeleteHerb();
 
-	cout << ans_cnt;
+        StepThree();
+    }
+
+    cout << ans;
+    return 0;
 }
