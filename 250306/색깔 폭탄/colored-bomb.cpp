@@ -13,7 +13,7 @@ int dx[] = { -1,1,0,0 };
 int dy[] = { 0,0,-1,1 };
 
 struct Node {
-	int x, y, dist;
+	int x, y, dist, zero_cnt;
 };
 
 int arr[21][21];
@@ -40,6 +40,7 @@ void BFS(int x, int y, int num) {
 	queue<pair<int, int>> q;
 	q.push({ x,y });
 	int cnt = 1;
+	int zero_cnt = 0;
 	visited[x][y] = true;
 
 	while (!q.empty()) {
@@ -51,23 +52,34 @@ void BFS(int x, int y, int num) {
 			int nx = cx + dx[i];
 			int ny = cy + dy[i];
 
-			if (InRange(nx, ny) && !visited[nx][ny] && (arr[nx][ny] == num || arr[nx][ny] == 0)) {
-				visited[nx][ny] = true;
-				q.push({ nx,ny });
-				cnt++;
+			//같은 숫자를 마주하면.
+			if (InRange(nx, ny) && !visited[nx][ny]) {
+				if (arr[nx][ny] == num) {
+					visited[nx][ny] = true;
+					q.push({ nx,ny });
+					cnt++;
+				}
+				//0을 마주할시.
+				else if (arr[nx][ny] == 0) {
+					visited[nx][ny] = true;
+					q.push({ nx,ny });
+					zero_cnt++;
+					cnt++;
+				}
 			}
 		}
 	}
 
 	if (cnt < 2) return;
 
-	v.push_back({ x,y,cnt });
+	v.push_back({ x,y,cnt , zero_cnt});
 }
 
 bool cmp(Node a, Node b) {
 	if (a.dist != b.dist) return a.dist > b.dist;
+	if (a.zero_cnt != b.zero_cnt) return a.zero_cnt < b.zero_cnt;
 	if (a.x != b.x) return a.x > b.x;
-	return a.y > b.y;
+	return a.y < b.y;
 }
 
 void Find() {
