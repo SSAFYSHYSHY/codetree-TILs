@@ -140,6 +140,8 @@ int BFS2(int x, int y, int ex, int ey, int now_fuel) {
 			}
 		}
 	}
+
+	return -1;
 }
 
 
@@ -152,12 +154,13 @@ int main() {
 		int idx;
 		//가장 가까운 거리의 좌표와 해당 idx 색출.
 		idx = Find_BFS(s_x, s_y, 0, c);
-		customer_visited[idx] = true;
 
 		if (idx == -1) {
 			cout << -1;
 			return 0;
 		}
+
+		customer_visited[idx] = true;
 
 		//가까운 위치에서 cusotmer의 idx의 값에 대해서 출구 값.
 		//연료 값 갱신.
