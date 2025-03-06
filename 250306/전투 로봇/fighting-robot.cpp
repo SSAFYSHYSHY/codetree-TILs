@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <tuple>
 #include <queue>
+#include <cstring>
 
 using namespace std;
 
