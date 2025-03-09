@@ -81,6 +81,14 @@ int BFS() {
 		}
 	}
 
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (arr[i][j] == 0 && !visited[i][j]) {
+				return 21e8;
+			}
+		}
+	}
+
 	return maxi;
 }
 
@@ -108,14 +116,10 @@ int main() {
 	//now, cnt
 	Back(0, 0);
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (!visited[i][j] && arr[i][j] == 0) {
-				cout << -1;
-				return 0;
-			}
-		}
+	if (ans == 21e8) {
+		cout << -1;
 	}
-
-	cout << ans;
+	else {
+		cout << ans;
+	}
 }
