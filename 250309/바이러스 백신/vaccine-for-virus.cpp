@@ -1,125 +1,104 @@
 #include <iostream>
-#include <algorithm>
+#include <vector>
 #include <queue>
+#include <algorithm>
 #include <cstring>
 
 using namespace std;
+
+struct Node {
+    int x, y, time;
+};
 
 int n, m;
 int arr[51][51];
 bool visited[51][51];
 
-struct Node {
-	int x, y, dict;
-};
+vector<pair<int, int>> virus;
+vector<int> selected;
+bool is_selected[11];
 
 int dx[] = { -1,1,0,0 };
 int dy[] = { 0,0,-1,1 };
 
-vector<pair<int, int>> v;
-vector<int> v1;
-int ans = 21e8;
-bool back_visited[11] = {false,};
+int bfs() {
+    memset(visited, false, sizeof(visited));
+    queue<Node> q;
 
-void Input() {
-	cin >> n >> m;
+    int total_empty = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (arr[i][j] == 0) total_empty++;
+        }
+    }
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			cin >> arr[i][j];
+    for (int i = 0; i < selected.size(); i++) {
+        int x = virus[selected[i]].first;
+        int y = virus[selected[i]].second;
+        visited[x][y] = true;
+        q.push({ x, y, 0 });
+    }
 
-			if (arr[i][j] == 2) {
-				v.push_back({ i,j });
-			}
-		}
-	}
+    int infected = 0;
+    int time = 0;
+
+    while (!q.empty()) {
+        Node cur = q.front(); q.pop();
+
+        for (int d = 0; d < 4; d++) {
+            int nx = cur.x + dx[d];
+            int ny = cur.y + dy[d];
+
+            if (nx < 0 || ny < 0 || nx >= n || ny >= n) continue;
+            if (visited[nx][ny] || arr[nx][ny] == 1) continue;
+
+            visited[nx][ny] = true;
+            if (arr[nx][ny] == 0) {
+                infected++;
+                time = max(time, cur.time + 1);
+            }
+            q.push({ nx, ny, cur.time + 1 });
+        }
+    }
+
+    if (infected == total_empty) return time;
+    else return 1e9;
 }
 
-bool InRange(int x, int y) {
-	return 0 <= x && x < n && 0 <= y && y < n;
+int ans = 1e9;
+void backtrack(int idx, int cnt) {
+    if (cnt == m) {
+        ans = min(ans, bfs());
+        return;
+    }
+
+    for (int i = idx; i < virus.size(); i++) {
+        if (!is_selected[i]) {
+            is_selected[i] = true;
+            selected.push_back(i);
+            backtrack(i + 1, cnt + 1);
+            selected.pop_back();
+            is_selected[i] = false;
+        }
+    }
 }
-
-int BFS() {
-	queue<Node> q;
-	memset(visited, false, sizeof(visited));
-
-	int maxi = 0;
-	//Back의 결과 q에 각각 넣고 BFS 이동.
-	for (int i = 0; i < v1.size(); i++) {
-		int x = v[v1[i]].first;
-		int y = v[v1[i]].second;
-		q.push({ x,y,0 });
-		visited[x][y] = true;
-	}
-
-	while (!q.empty()) {
-		int x = q.front().x;
-		int y = q.front().y;
-		int dict = q.front().dict;
-		q.pop();
-
-		maxi = max(maxi, dict);
-
-		for (int i = 0; i < 4; i++) {
-			int nx = x + dx[i];
-			int ny = y + dy[i];
-
-			//범위 안에 방문하지 않고 벽이 아니면.
-			if (InRange(nx, ny) && !visited[nx][ny] && arr[nx][ny] != 1) {
-				//그냥 바이러스인 경우 +1
-				if (arr[nx][ny] == 0) {
-					q.push({ nx,ny, dict + 1 });
-					visited[nx][ny] = true;
-				}
-				//만약 병원을 마주한 경우.
-				else if (arr[nx][ny] == 2) {
-					q.push({ nx,ny,dict });
-					visited[nx][ny] = true;
-				}
-
-			}
-		}
-	}
-
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (arr[i][j] == 0 && !visited[i][j]) {
-				return 21e8;
-			}
-		}
-	}
-
-	return maxi;
-}
-
-void Back(int now, int cnt) {
-	if (cnt == m) {
-		ans = min(ans, BFS());
-		return;
-	}
-
-	for (int i = now; i < v.size(); i++) {
-		if (!back_visited[i]) {
-			back_visited[i] = true;
-			v1.push_back(i);
-			Back(i + 1, cnt + 1);
-			v1.pop_back();
-			back_visited[i] = false;
-		}
-	}
-}
-
 
 int main() {
-	Input();
+    ios::sync_with_stdio(false);
+    cin.tie(0);
 
-	//now, cnt
-	Back(0, 0);
+    cin >> n >> m;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> arr[i][j];
+            if (arr[i][j] == 2) virus.push_back({ i, j });
+        }
+    }
 
-	if (ans == 21e8) {
-		cout << -1;
-	}
-	else {
-		cout << ans;
-	}
+    backtrack(0, 0);
+
+    if (ans == 1e9) cout << -1;
+    else cout << ans;
+
+    return 0;
 }
