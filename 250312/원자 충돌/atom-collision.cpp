@@ -151,7 +151,7 @@ int main() {
 		//2 이상인 배열에 한해서 체크 검정.
 		for (int i = 1; i <= n; i++) {
 			for (int j = 1; j <= n; j++) {
-				if (arr[i][j] >= 1) {
+				if (arr[i][j] > 1) {
 					Check(i, j);
 				}
 			}
