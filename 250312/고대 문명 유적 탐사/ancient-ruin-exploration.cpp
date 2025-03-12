@@ -1,273 +1,153 @@
 #include <iostream>
-#include <algorithm>
 #include <queue>
-#include <cstring>
 #include <vector>
+
+#define N_large 5 // 고대 문명 전체 격자 크기입니다.
+#define N_small 3 // 회전시킬 격자의 크기입니다.
 
 using namespace std;
 
-struct Node {
-	int x, y, num, idx;
+// 고대 문명 격자를 정의합니다
+class Board {
+public:
+    int a[N_large][N_large];
+
+    Board() {
+        for (int i = 0; i < N_large; ++i) {
+            for (int j = 0; j < N_large; ++j) {
+                a[i][j] = 0;
+            }
+        }
+    }
+
+    // 주어진 y, x가 고대 문명 격자의 범위 안에 있는지 확인하는 함수
+    bool InRange(int y, int x) {
+        return 0 <= y && y < N_large && 0 <= x && x < N_large;
+    }
+
+    // 현재 격자에서 sy, sx를 좌측상단으로 하여 시계방향 90도 회전
+    void Rotate(int sy, int sx) {
+        int temp[3][3];
+        for (int i = 0; i < N_small; ++i) {
+            for (int j = 0; j < N_small; ++j) {
+                temp[i][j] = a[sy + i][sx + j];
+            }
+        }
+        // 90도 시계방향 회전
+        for (int i = 0; i < N_small; ++i) {
+            for (int j = 0; j < N_small; ++j) {
+                a[sy + i][sx + j] = temp[N_small - j - 1][i];
+            }
+        }
+    }
+
+    // 현재 격자에서 유물 획득 (BFS)
+    int CalScore() {
+        int score = 0;
+        bool visit[N_large][N_large] = {false};
+        int dy[4] = {0, 1, 0, -1}, dx[4] = {1, 0, -1, 0};
+        
+        // BFS로 유물 탐색
+        for (int i = 0; i < N_large; ++i) {
+            for (int j = 0; j < N_large; ++j) {
+                if (!visit[i][j]) {
+                    queue<pair<int, int>> q, trace;
+                    q.push({i, j});
+                    trace.push({i, j});
+                    visit[i][j] = true;
+                    while (!q.empty()) {
+                        auto cur = q.front(); q.pop();
+                        for (int k = 0; k < 4; ++k) {
+                            int ny = cur.first + dy[k], nx = cur.second + dx[k];
+                            if (InRange(ny, nx) && a[ny][nx] == a[cur.first][cur.second] && !visit[ny][nx]) {
+                                q.push({ny, nx});
+                                trace.push({ny, nx});
+                                visit[ny][nx] = true;
+                            }
+                        }
+                    }
+                    // 유물이 되면 점수 계산 및 비우기
+                    if (trace.size() >= 3) {
+                        score += trace.size();
+                        while (!trace.empty()) {
+                            auto t = trace.front(); trace.pop();
+                            a[t.first][t.second] = 0;
+                        }
+                    }
+                }
+            }
+        }
+        return score;
+    }
+
+    // 유물 획득 후 조각 채우기
+    void Fill(queue<int>& que) {
+        for (int j = 0; j < N_large; ++j) {
+            for (int i = N_large - 1; i >= 0; --i) {
+                if (a[i][j] == 0 && !que.empty()) {
+                    a[i][j] = que.front();
+                    que.pop();
+                }
+            }
+        }
+    }
 };
 
-int k, m;
-queue<int> saved_num;
-vector<Node> v;
-vector<pair<int, int>> pos;
-int arr[5][5];
-int new_arr[5][5];
-int original_arr[5][5];
-bool visited[5][5] = { false, };
-
-int dx[] = { -1,1,0,0 };
-int dy[] = { 0,0,-1,1 };
-
-void Print() {
-
-	cout << "\n\n";
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j < 5; j++) {
-			cout << arr[i][j] << " ";
-		}
-		cout << "\n";
-	}
-	cout << "\n\n";
-}
-
-void Input() {
-	cin >> k >> m;
-
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j < 5; j++) {
-			cin >> arr[i][j];
-			original_arr[i][j] = arr[i][j];
-		}
-	}
-
-	for (int i = 0; i < m; i++) {
-		int x;
-		cin >> x;
-		saved_num.push(x);
-	}
-}
-
-void Rotate(int s_x, int s_y) {
-	memset(new_arr, 0, sizeof(new_arr));
-
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			new_arr[s_x + j][s_y + 2 - i] = arr[s_x + i][s_y + j];
-		}
-	}
-
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			arr[s_x + i][s_y + j] = new_arr[s_x + i][s_y + j];
-		}
-	}
-}
-
-bool InRange(int x, int y) {
-	return 0 <= x && x < 5 && 0 <= y && y < 5;
-}
-
-int BFS(int x, int y, int num) {
-	queue<pair<int, int>> q;
-	q.push({ x,y });
-	visited[x][y] = true;
-	int size = 1;
-
-	while (!q.empty()) {
-		int cx = q.front().first;
-		int cy = q.front().second;
-		q.pop();
-
-		for (int i = 0; i < 4; i++) {
-			int nx = cx + dx[i];
-			int ny = cy + dy[i];
-
-			if (InRange(nx, ny) && !visited[nx][ny] && arr[nx][ny] == num) {
-				q.push({ nx,ny });
-				visited[nx][ny] = true;
-				size++;
-			}
-		}
-	}
-
-	if (size >= 3) {
-		return size;
-	}
-	return 0;
-}
-
-void Find_BFS(int x, int y, int k) {
-
-	//회전 수.
-	for (int i = 0; i < k; i++) {
-		Rotate(x, y);
-	}
-
-	int sum = 0;
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j < 5; j++) {
-			if (!visited[i][j] && arr[i][j] > 0) {
-				sum += BFS(i, j, arr[i][j]);
-			}
-		}
-	}
-
-	memset(visited, false, sizeof(visited));
-
-	if (sum > 0) {
-		v.push_back({ x ,y ,sum,k });
-	}
-
-	//arr의 카피.
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j < 5; j++) {
-			arr[i][j] = original_arr[i][j];
-		}
-	}
-}
-
-bool cmp(Node a, Node b) {
-	if (a.num != b.num) return a.num > b.num;
-	else if (a.idx != b.idx) return a.idx < b.idx;
-	else if (a.y != b.y) return a.y < b.y;
-	return a.x < b.x;
-}
-
-void Find() {
-	int sum = 0;
-
-	for (int i = 0; i <= 2; i++) {
-		for (int j = 0; j <= 2; j++) {
-			for (int k = 0; k < 4; k++) {
-				Find_BFS(i, j, k);
-			}
-		}
-	}
-
-	sort(v.begin(), v.end(), cmp);
-}
-
-bool cmp2(pair<int, int> a, pair<int, int> b) {
-	if (a.second != b.second) return a.second < b.second;
-	return a.first > b.first;
-}
-
-int BFS2(int x, int y, int num) {
-	queue<pair<int, int>> q;
-	vector<pair<int, int>> temp;
-	q.push({ x,y });
-	temp.push_back({ x,y });
-	visited[x][y] = true;
-	int size = 1;
-
-	while (!q.empty()) {
-		int cx = q.front().first;
-		int cy = q.front().second;
-		q.pop();
-
-		for (int i = 0; i < 4; i++) {
-			int nx = cx + dx[i];
-			int ny = cy + dy[i];
-
-			if (InRange(nx, ny) && !visited[nx][ny] && arr[nx][ny] == num) {
-				q.push({ nx,ny });
-				size++;
-				visited[nx][ny] = true;
-				temp.push_back({ nx,ny });
-			}
-		}
-	}
-
-	//크기가 3인 경우. temp 정렬.
-	if (size >= 3) {
-		for (int i = 0; i < temp.size(); i++) {
-			pos.push_back({ temp[i].first, temp[i].second });
-		}
-
-		return size;
-	}
-
-	return 0;
-}
-
 int main() {
-	Input();
+    int M, K;
+    queue<int> q;
+    Board board;
 
-	// 메인 while문 내부 수정
-	while (k--) {
-		int ans = 0;
-		v.clear(); // Find 전에 꼭 비워야 함
-		pos.clear();
-		memset(visited, false, sizeof(visited));
+    cin >> K >> M;
+    for (int i = 0; i < N_large; ++i) {
+        for (int j = 0; j < N_large; ++j) {
+            cin >> board.a[i][j];
+        }
+    }
 
-		Find();
-		if (v.empty()) break; // 아무 회전 결과도 없을 경우 종료
+    for (int i = 0; i < M; ++i) {
+        int t;
+        cin >> t;
+        q.push(t);
+    }
 
-		// 가장 좋은 회전 실행
-		for (int i = 0; i < v[0].idx; i++) Rotate(v[0].x, v[0].y);
+    // 최대 K번의 탐사과정을 거칩니다.
+    while (K--) {
+        int maxScore = 0;
+        Board maxScoreBoard = board;
 
-		// 첫 BFS2 수행
-		memset(visited, false, sizeof(visited));
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 5; j++) {
-				if (!visited[i][j] && arr[i][j] > 0) {
-					ans += BFS2(i, j, arr[i][j]);
-				}
-			}
-		}
+        // 회전 목표에 맞는 결과를 maxScoreBoard에 저장합니다.
+        for (int cnt = 1; cnt <= 3; ++cnt) {
+            for (int sx = 0; sx <= N_large - N_small; ++sx) {
+                for (int sy = 0; sy <= N_large - N_small; ++sy) {
+                    Board rotated = board;
+                    for (int i = 0; i < cnt; ++i) {
+                        rotated.Rotate(sy, sx); // 지정된 위치에서 회전 수행
+                    }
+                    int score = rotated.CalScore();
+                    if (maxScore < score) {
+                        maxScore = score;
+                        maxScoreBoard = rotated;
+                    }
+                }
+            }
+        }
 
-		sort(pos.begin(), pos.end(), cmp2);
-		for (auto& p : pos) {
-			arr[p.first][p.second] = 0;
-			if (!saved_num.empty()) {
-				arr[p.first][p.second] = saved_num.front();
-				saved_num.pop();
-			}
-		}
+        // 더 이상 유물을 획득할 수 없으면 탐사 종료
+        if (maxScore == 0) break;
 
-		// 연쇄 처리
-		while (true) {
-			pos.clear();
-			memset(visited, false, sizeof(visited));
+        board = maxScoreBoard;
 
-			bool flag = false;
-			int chain_sum = 0;
+        // 유물의 연쇄 획득
+        while (true) {
+            board.Fill(q);
+            int newScore = board.CalScore();
+            if (newScore == 0) break;
+            maxScore += newScore;
+        }
 
-			for (int i = 0; i < 5; i++) {
-				for (int j = 0; j < 5; j++) {
-					if (!visited[i][j] && arr[i][j] > 0) {
-						chain_sum += BFS2(i, j, arr[i][j]); // 누적합
-					}
-				}
-			}
+        cout << maxScore << " ";
+    }
 
-			if (chain_sum < 3) break;
-			flag = true;
-
-			sort(pos.begin(), pos.end(), cmp2);
-			for (auto& p : pos) {
-				arr[p.first][p.second] = 0;
-				if (!saved_num.empty()) {
-					arr[p.first][p.second] = saved_num.front();
-					saved_num.pop();
-				}
-			}
-			ans += chain_sum;
-
-			// original_arr 업데이트
-			for (int i = 0; i < 5; i++) {
-				for (int j = 0; j < 5; j++) {
-					original_arr[i][j] = arr[i][j];
-				}
-			}
-		}
-
-		if (ans == 0) break;
-		cout << ans << " ";
-	}
-
+    return 0;
 }
