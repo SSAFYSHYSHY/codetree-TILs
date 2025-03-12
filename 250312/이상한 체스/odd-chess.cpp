@@ -3,6 +3,7 @@
 #include <climits>
 #include <tuple>
 #include <algorithm>
+#include <cstring>
 
 #define MAX_N 8
 #define MAX_M 8
