@@ -1,170 +1,92 @@
 #include <iostream>
 #include <vector>
-#include <cstring>
-#include <algorithm>
+#include <map>
 
 using namespace std;
 
-struct Node {
-	int x, y, m, s, d;
+struct Fireball {
+    int x, y, mass, speed, dir;
 };
 
-int arr[51][51];
-int new_arr[51][51];
-vector<Node> v;
-
-int dx[] = {-1,-1,0,1,1,1,0,-1};
-int dy[] = {0,1,1,1,0,-1,-1,-1};
-int ans = 0;
 int n, m, k;
+vector<Fireball> cur;
+int dx[] = { -1, -1, 0, 1, 1, 1, 0, -1 };
+int dy[] = { 0, 1, 1, 1, 0, -1, -1, -1 };
 
-void Print() {
-	for (int i = 1; i <= n; i++) {
-		for (int j = 1; j <= n; j++) {
-			cout << arr[i][j] << " ";
-		}
-		cout << "\n";
-	}
-	cout << "\n\n";
+void input() {
+    cin >> n >> m >> k;
+    for (int i = 0; i < m; i++) {
+        int x, y, mass, speed, dir;
+        cin >> x >> y >> mass >> speed >> dir;
+        cur.push_back({ x, y, mass, speed, dir });
+    }
 }
 
-void Input() {
-	cin >> n >> m >> k;
-
-	for (int i = 0; i < m; i++) {
-		int x, y, m, s, d;
-		cin >> x >> y >> m >> s >> d;
-
-		v.push_back({ x,y,m,s,d });
-	}
+void move_fireballs() {
+    vector<Fireball> moved;
+    for (auto& fb : cur) {
+        int nx = ((fb.x - 1 + dx[fb.dir] * fb.speed) % n + n) % n + 1;
+        int ny = ((fb.y - 1 + dy[fb.dir] * fb.speed) % n + n) % n + 1;
+        moved.push_back({ nx, ny, fb.mass, fb.speed, fb.dir });
+    }
+    cur = moved;
 }
 
-bool InRange(int x, int y) {
-	return 1 <= x && x <= n && 1 <= y && y <= n;
+void merge_fireballs() {
+    map<pair<int, int>, vector<Fireball>> map_fireballs;
+    for (auto& fb : cur) {
+        map_fireballs[{fb.x, fb.y}].push_back(fb);
+    }
+
+    vector<Fireball> next;
+    for (auto& entry : map_fireballs) {
+        auto [x, y] = entry.first;
+        auto& vec = entry.second;
+
+        if (vec.size() == 1) {
+            next.push_back(vec[0]);
+        } else {
+            int total_mass = 0, total_speed = 0;
+            bool all_even = true, all_odd = true;
+
+            for (auto& fb : vec) {
+                total_mass += fb.mass;
+                total_speed += fb.speed;
+                if (fb.dir % 2 == 0) all_odd = false;
+                else all_even = false;
+            }
+
+            int new_mass = total_mass / 5;
+            if (new_mass == 0) continue;
+
+            int new_speed = total_speed / vec.size();
+            vector<int> new_dirs = (all_even || all_odd) ? vector<int>{0, 2, 4, 6} : vector<int>{1, 3, 5, 7};
+
+            for (int d : new_dirs) {
+                next.push_back({ x, y, new_mass, new_speed, d });
+            }
+        }
+    }
+
+    cur = next;
 }
 
-void Move() {
-	for (int i = 0; i < v.size(); i++) {
-		int x = v[i].x;
-		int y = v[i].y;
-		int m = v[i].m;
-		int s = v[i].s;
-		int d = v[i].d;
-
-		if (x == -1 && y == -1) continue;
-
-		for (int j = 0; j < s; j++) {
-			x += dx[d];
-			y += dy[d];
-
-
-			if (!InRange(x, y)) {
-				if (x <= 0) {
-					x = n;
-				}
-				else if (x > n) {
-					x = 1;
-				}
-
-				if (y <= 0) {
-					y = n;
-				}
-				else if (y > n) {
-					y = 1;
-				}
-			}
-
-		}
-
-		arr[x][y]++;
-		v[i] = { x, y, m, s,d };
-	}
-}
-
-void Check(int c_x, int c_y) {
-	int sum_m = 0;
-	int sum_v = 0;
-	//방향에 따라 
-	int num = arr[c_x][c_y];
-	int ol = 0, tl = 0;
-
-	for (int i = 0; i < v.size(); i++) {
-		if (v[i].x == -1 && v[i].y == -1) {
-			continue;
-		}
-
-		if (v[i].x == c_x && v[i].y == c_y) {
-			sum_m += v[i].m;
-			sum_v += v[i].s;
-			int dir = v[i].d;
-
-			if (dir % 2 == 0) {
-				ol++;
-			}
-			else {
-				tl++;
-			}
-
-			//합쳐진 원자는 더 이상 사용하지 않음.
-			v[i].x = -1;
-			v[i].y = -1;
-		}
-	}
-
-	//합쳐진 합의 나눔과 속도를 나눔. 이후 4 방향따라 나눠야 함.
-	sum_m /= 5;
-	sum_v /= arr[c_x][c_y];
-
-	//0 이면 고려 안함.
-	if (sum_m == 0) {
-		return;
-	}
-	//아니면 4 방향에 따라 나눔.
-	else {
-		//만약 방향이 안바뀌어서 그대로면.
-		if (ol == arr[c_x][c_y] || tl == arr[c_x][c_y]) {
-			v.push_back({ c_x,c_y,sum_m,sum_v, 0 });
-			v.push_back({ c_x,c_y,sum_m,sum_v, 2 });
-			v.push_back({ c_x,c_y,sum_m,sum_v, 4 });
-			v.push_back({ c_x,c_y,sum_m,sum_v, 6 });
-		}
-		//방향이 바뀌어서 대각선을 고려.
-		else {
-			v.push_back({ c_x,c_y,sum_m,sum_v, 1 });
-			v.push_back({ c_x,c_y,sum_m,sum_v, 3 });
-			v.push_back({ c_x,c_y,sum_m,sum_v, 5 });
-			v.push_back({ c_x,c_y,sum_m,sum_v, 7 });
-		}
-	}
-
+int get_total_mass() {
+    int sum = 0;
+    for (auto& fb : cur) sum += fb.mass;
+    return sum;
 }
 
 int main() {
-	Input();
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-	for (int t = 0; t < k; t++) {
-		//각 바이러스별로 일단 이동.
-		memset(arr, 0, sizeof(arr));
-		Move();
-		//Print();
+    input();
+    while (k--) {
+        move_fireballs();
+        merge_fireballs();
+    }
 
-		//2 이상인 배열에 한해서 체크 검정.
-		for (int i = 1; i <= n; i++) {
-			for (int j = 1; j <= n; j++) {
-				if (arr[i][j] > 1) {
-					Check(i, j);
-				}
-			}
-		}
-
-		//break;
-	}
-
-	for (int i = 0; i < v.size(); i++) {
-		if (v[i].x == -1 && v[i].y == -1) continue;
-
-		ans += v[i].m;
-	}
-
-	cout << ans;
+    cout << get_total_mass() << '\n';
+    return 0;
 }
