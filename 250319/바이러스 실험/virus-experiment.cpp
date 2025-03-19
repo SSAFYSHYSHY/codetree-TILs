@@ -49,6 +49,8 @@ bool cmp(Node a, Node b) {
 
 void Calc1() {
 	sort(v.begin(), v.end(), cmp);
+	vector<Node> alive;
+	vector<Node> dead;
 
 	for (int i = 0; i < v.size(); i++) {
 		int x = v[i].x;
@@ -56,30 +58,23 @@ void Calc1() {
 		int age = v[i].age;
 		bool flag = v[i].live;
 
-		if (!flag) continue;
-
 		//나이보다 같은 크기 이상의 양분이라면
 		if (arr[x][y] >= age) {
 			arr[x][y] -= age;
 			age++;
+			alive.push_back({ x,y,age,true });
 		}
 			//그렇지 못한다면 먹지 못하므로 사망.
 		else {
-			flag = false;
-		}
-
-			//정보 재갱신.
-		v[i] = { x,y,age,flag };
-	}
-
-	temp_v.clear();
-	for (int i = 0; i < v.size(); i++) {
-		if (v[i].live) {
-			temp_v.push_back({ v[i] });
+			dead.push_back({ x,y,age,false});
 		}
 	}
-	v = temp_v;
-	temp_v.clear();
+
+	for (int i = 0; i < dead.size(); i++) {
+		arr[dead[i].x][dead[i].y] += (dead[i].age / 2);
+	}
+
+	v = alive;
 }
 
 void Calc2() {
@@ -170,7 +165,7 @@ int main() {
 		Calc1();
 
 		//죽은 바이러스 처리.
-		Calc2();
+		//Calc2();
 
 		//8 방향 순회.
 		Calc3();
@@ -178,7 +173,6 @@ int main() {
 		//+1씩 증가.
 		Calc4();
 
-		//Print();
 
 	}
 
