@@ -22,6 +22,17 @@ void Input() {
 	}
 }
 
+void Print() {
+	cout << "\n";
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cout << arr[i][j] << " ";
+		}
+		cout << "\n";
+	}
+	cout << "\n";
+}
+
 void Drop(int idx) {
 	memset(new_arr, 0, sizeof(new_arr));
 
@@ -72,7 +83,7 @@ void Drop(int idx) {
 			int temp = n - 1;
 
 			for (int i = n - 1; i >= 0; i--) {
-				if (arr[i][j] == arr[i - 1][j]) {
+				if (arr[i][j] == arr[i - 1][j] && arr[i][j] != 0 && arr[i-1][j] != 0) {
 					new_arr[temp][j] = arr[i][j] + arr[i - 1][j];
 					temp--;
 					arr[i - 1][j] = 0;
@@ -105,8 +116,9 @@ void Drop(int idx) {
 				}
 			}
 		}
-
 	}
+
+	//Print();
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
