@@ -42,7 +42,7 @@ void Drop(int idx) {
 			int temp = 0;
 
 			for (int i = 0; i < n; i++) {
-				if (arr[i][j] == arr[i + 1][j]) {
+				if (arr[i][j] == arr[i + 1][j] && arr[i][j] != 0 && arr[i + 1][j] != 0) {
 					new_arr[temp][j] = arr[i][j] + arr[i + 1][j];
 					temp++;
 					arr[i + 1][j] = 0;
@@ -62,7 +62,7 @@ void Drop(int idx) {
 			int temp = n - 1;
 
 			for (int j = n - 1; j >= 0; j--) {
-				if (arr[i][j] == arr[i][j - 1]) {
+				if (arr[i][j] == arr[i][j - 1] && arr[i][j] != 0 && arr[i][j -1 ] != 0) {
 					new_arr[i][temp] = arr[i][j] + arr[i][j - 1];
 					arr[i][j - 1] = 0;
 					temp--;
@@ -83,7 +83,7 @@ void Drop(int idx) {
 			int temp = n - 1;
 
 			for (int i = n - 1; i >= 0; i--) {
-				if (arr[i][j] == arr[i - 1][j] && arr[i][j] != 0 && arr[i-1][j] != 0) {
+				if (arr[i][j] == arr[i - 1][j] && arr[i][j] != 0 && arr[i - 1][j] != 0) {
 					new_arr[temp][j] = arr[i][j] + arr[i - 1][j];
 					temp--;
 					arr[i - 1][j] = 0;
@@ -104,7 +104,7 @@ void Drop(int idx) {
 			int temp = 0;
 
 			for (int j = 0; j < n; j++) {
-				if (arr[i][j] == arr[i][j + 1]) {
+				if (arr[i][j] == arr[i][j + 1] && arr[i][j] != 0 && arr[i][j + 1] != 0) {
 					new_arr[i][temp] = arr[i][j] + arr[i][j + 1];
 					temp++;
 					arr[i][j + 1] = 0;
