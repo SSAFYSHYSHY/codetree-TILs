@@ -6,8 +6,8 @@
 using namespace std;
 
 int n, m, k;
-int arr[21][21];
-int dice_hp[21][21];
+int arr[22][22];
+int dice_hp[22][22];
 
 int dx[] = { -1,1,0,0 };
 int dy[] = { 0,0,-1,1 };
@@ -86,10 +86,13 @@ void Print() {
 }
 
 bool Flag() {
+    if (!player[0].flag) return false;
+    
     for (int i = 1; i < player.size(); i++) {
         if (player[i].flag) return false;
     }
-    return player[0].flag;
+
+    return true;
 }
 
 void Sub() {
@@ -173,7 +176,7 @@ void Player_Move() {
 
 int main() {
     Input();
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i <= 999; i++) {
         if (Flag()) {
             cout << i << "\n";
             return 0;
